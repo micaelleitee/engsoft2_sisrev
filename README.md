@@ -1,50 +1,88 @@
-# Welcome to your Expo app 👋
+# Sistema de Agendamento Online do IFCE - SISREV
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 📋 Sobre o Projeto
 
-## Get started
+Este é um projeto acadêmico desenvolvido para o Instituto Federal de Educação, Ciência e Tecnologia do Ceará (IFCE) - Campus Crato, com o objetivo de modernizar e otimizar a gestão dos laboratórios de informática.
 
-1. Install dependencies
+## 🎯 Problema Identificado
 
+No IFCE campus Crato, a gestão dos laboratórios de informática enfrenta dificuldades significativas. Professores e alunos não possuem acesso rápido e centralizado às informações de uso, o que resulta em incertezas na disponibilidade do laboratório para realização das aulas.
+
+Atualmente, a comunicação ocorre de forma manual: avisos informais e/ou comunicação presencial. Esse método leva a ineficiências e frustrações, além de aumentar o risco de conflitos de horários e uso indevido dos espaços.
+
+## 🚀 Objetivo
+
+Desenvolver uma solução digital que permita:
+- Visualizar a disponibilidade dos laboratórios em tempo real
+- Realizar agendamentos antecipados por professores
+- Reduzir conflitos de horários e uso indevido dos espaços
+- Garantir transparência e acessibilidade a professores, técnicos e alunos
+
+## ⚡ Funcionalidades
+
+O Sistema de Agendamento Online do IFCE terá as seguintes funcionalidades:
+
+### 🖥️ Painel de Disponibilidade
+- Exibição em tempo real da disponibilidade dos laboratórios
+- Visualização das datas de ocupação com limite de até 1 semana
+- Exibição das futuras reservas dos laboratórios (até 1 semana)
+
+### 📅 Agendamento Automatizado
+- Sistema de reservas antecipadas para professores
+- Prevenção de conflitos de horários
+- Interface intuitiva para agendamentos
+
+### 🔔 Notificações/Alertas
+- Alertas sobre mudanças em laboratórios marcados
+- Notificações de confirmação de agendamentos
+- Avisos de cancelamentos ou alterações
+
+### 📊 Relatórios/Históricos
+- Histórico de agendamentos acessível para fins de gestão
+- Relatórios de uso dos laboratórios
+- Dados para análise e tomada de decisões
+
+## 🎯 Benefícios Esperados
+
+A implementação desse sistema visa resolver (ou melhorar) aspectos como:
+- ✅ Redução de conflitos de horários
+- ✅ Agilidade e praticidade na gestão
+- ✅ Transparência no uso dos laboratórios
+- ✅ Melhoria na comunicação entre usuários
+- ✅ Otimização do uso dos espaços
+
+## 🛠️ Tecnologias Utilizadas
+
+- **React Native** com **Expo** para desenvolvimento mobile
+- **TypeScript** para tipagem estática
+- **Expo Router** para navegação baseada em arquivos
+
+## 🚀 Como Executar o Projeto
+
+1. **Instalar dependências**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+2. **Iniciar o aplicativo**
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. **Opções de execução:**
+   - [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
+   - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+   - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+   - [Expo Go](https://expo.dev/go) - sandbox limitado para testes
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📁 Estrutura do Projeto
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+O projeto utiliza [roteamento baseado em arquivos](https://docs.expo.dev/router/introduction). Os arquivos principais estão localizados na pasta **app**.
 
-## Get a fresh project
+## 👥 Equipe de Desenvolvimento
 
-When you're ready, run:
+Projeto acadêmico desenvolvido por estudantes do curso de Engenharia de Software do IFCE - Campus Crato.
 
-```bash
-npm run reset-project
-```
+## 📄 Licença
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Este é um projeto acadêmico desenvolvido para fins educacionais.
