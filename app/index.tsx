@@ -1,9 +1,10 @@
 import { Text, View } from 'react-native';
+import Login from './login/login';
 
 export default function index() {
     return (
-        <View className='bg-red-500 justify-center items-center h-full'>
-            <Text>Hello World</Text>
+        <View>
+            <Login />
         </View>
     )
 }
