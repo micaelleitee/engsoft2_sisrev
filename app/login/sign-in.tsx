@@ -19,7 +19,7 @@ export default function SignIn() {
         <View className='flex-1 justify-center items-center'>
             {/* Logo */}
             <Image 
-                source={require('../../../src/img/LogoIF.png')} 
+                source={require('../../src/img/LogoIF.png')} 
                 className='w-24 h-24 mb-6'
                 resizeMode='contain'
             />
@@ -76,7 +76,7 @@ export default function SignIn() {
                 </TouchableOpacity>
                 
                 {/* Link Registrar-se */}
-                <TouchableOpacity className='py-2' onPress={() => router.push('/login/sign-up/index')}>
+                <TouchableOpacity className='py-2' onPress={() => router.push('/login/sign-up')}>
                     <Text className='text-green-700 text-center font-semibold text-base'>
                         Registrar-se
                     </Text>
