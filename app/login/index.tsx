@@ -6,15 +6,12 @@ export default function Login() {
     const [password, setPassword] = useState('');
 
     const handleLogin = () => {
-        if (!login || !password) {
-            Alert.alert('Erro', 'Por favor, preencha todos os campos');
-            return;
+        if (login.toLowerCase() === 'micael' && password === 'micael') {
+            Alert.alert('Sucesso', 'Login realizado com sucesso!');
+            // Futuramente, redirecionar para a próxima tela
+        } else {
+            Alert.alert('Erro', 'Login ou senha inválidos.');
         }
-        
-        // Aqui você pode adicionar a lógica de autenticação
-        console.log('Login:', login);
-        console.log('Senha:', password);
-        Alert.alert('Sucesso', 'Login realizado com sucesso!');
     };
 
     return (
