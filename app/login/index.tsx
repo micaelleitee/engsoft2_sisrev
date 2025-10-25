@@ -9,7 +9,7 @@ export default function Login() {
 
     const handleLogin = () => {
         if (login.toLowerCase() === 'micael' && password === 'micael') {
-            router.replace('/dashboard/index');
+            router.replace('/dashboard');
         } else {
             Alert.alert('Erro', 'Login ou senha inválidos.');
         }
