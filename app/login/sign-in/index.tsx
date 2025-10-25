@@ -76,7 +76,7 @@ export default function SignIn() {
                 </TouchableOpacity>
                 
                 {/* Link Registrar-se */}
-                <TouchableOpacity className='py-2' onPress={() => router.push('/login/sign-up')}>
+                <TouchableOpacity className='py-2' onPress={() => router.push('/login/sign-up/index')}>
                     <Text className='text-green-700 text-center font-semibold text-base'>
                         Registrar-se
                     </Text>
