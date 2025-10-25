@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function Login() {
@@ -23,6 +23,7 @@ export default function Login() {
             <Image 
                 source={require('../../src/img/LogoIF.png')} 
                 className='w-24 h-24 mb-6'
+                resizeMode='contain'
             />
             
             {/* Título SISREV */}
