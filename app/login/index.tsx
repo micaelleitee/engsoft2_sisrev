@@ -18,7 +18,7 @@ export default function Login() {
     };
 
     return (
-        <View className='justify-center items-center'>
+        <View className='flex-1 justify-center items-center'>
             {/* Logo */}
             <Image 
                 source={require('../../src/img/LogoIF.png')} 
@@ -38,7 +38,7 @@ export default function Login() {
                         Login
                     </Text>
                     <TextInput
-                        className= border border-black rounded-full  p-3 text-gray-800 text-base'
+                        className= 'border border-black rounded-full  p-3 text-gray-800 text-base'
                         placeholder='Digite seu login'
                         placeholderTextColor='#1C5E27'
                         value={login}
