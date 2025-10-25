@@ -1,14 +1,15 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function Login() {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
 
     const handleLogin = () => {
         if (login.toLowerCase() === 'micael' && password === 'micael') {
-            Alert.alert('Sucesso', 'Login realizado com sucesso!');
-            // Futuramente, redirecionar para a próxima tela
+            router.replace('/dashboard/index');
         } else {
             Alert.alert('Erro', 'Login ou senha inválidos.');
         }
