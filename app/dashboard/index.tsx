@@ -62,7 +62,7 @@ export default function Dashboard() {
             </View>
             
             {/* Conteúdo Principal - Lista de Laboratórios */}
-            <ScrollView className='flex-1 px-4 py-2'>
+            <ScrollView className='flex-1 px-4 py-2 pb-20'>
                 <Text className='text-xl font-bold text-green-700 mb-4'>
                     Laboratórios
                 </Text>
@@ -90,11 +90,20 @@ export default function Dashboard() {
                 ))}
             </ScrollView>
             
-            {/* Bottom Navigation Bar */}
-            <View className='bg-green-700 rounded-t-3xl px-6 py-4 flex-row justify-around items-center'>
+            {/* Bottom Navigation Bar - Flutuante */}
+            <View 
+                className='bg-green-700 rounded-full mx-8 mb-4 px-6 py-3 flex-row justify-around items-center'
+                style={{
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                }}
+            >
                 {/* Início - Ativo */}
                 <TouchableOpacity className='bg-green-500 rounded-full px-6 py-2 flex-row items-center' activeOpacity={0.7}>
-                    <Ionicons name="home" size={20} color="white" />
+                    <Ionicons name="home-outline" size={20} color="white" />
                     <Text className='text-white font-semibold ml-2 text-sm'>
                         Início
                     </Text>
