@@ -1,12 +1,119 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const Dashboard: React.FC = () => {
+// Mock de laboratórios - posteriormente virá do banco de dados
+const LABORATORIES = [
+    { id: 1, name: 'Laboratório 01' },
+    { id: 2, name: 'Laboratório 02' },
+    { id: 3, name: 'Laboratório 03' },
+    { id: 4, name: 'Laboratório 04' },
+    { id: 5, name: 'Laboratório 05' },
+];
+
+export default function Dashboard() {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleLaboratoryPress = (labId: number) => {
+        // Aqui você pode adicionar a navegação para detalhes do laboratório
+        console.log('Laboratório selecionado:', labId);
+    };
+
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Dashboard</Text>
+        <View className='flex-1 bg-white'>
+            {/* Header */}
+            <View className='bg-white pt-12 pb-4 px-4'>
+                {/* Top Row - Icons */}
+                <View className='flex-row justify-between items-center mb-4'>
+                    {/* Ícone de Perfil */}
+                    <TouchableOpacity className='w-12 h-12 bg-green-700 rounded-full justify-center items-center' activeOpacity={0.7}>
+                        <AntDesign name="user" size={24} color="white" />
+                    </TouchableOpacity>
+                    
+                    {/* Logo SISREV */}
+                    <View className='flex-row items-center'>
+                        <Image 
+                            source={require('../../src/img/LogoIF.png')} 
+                            className='w-8 h-8 mr-2'
+                            resizeMode='contain'
+                        />
+                        <Text className='text-2xl font-bold text-green-700'>
+                            SISREV
+                        </Text>
+                    </View>
+                    
+                    {/* Ícone de Notificações */}
+                    <TouchableOpacity className='w-10 h-10 justify-center items-center' activeOpacity={0.7}>
+                        <Ionicons name="notifications-outline" size={28} color="#1C5E27" />
+                    </TouchableOpacity>
+                </View>
+                
+                {/* Barra de Busca */}
+                <View className='bg-white border border-gray-300 rounded-full px-4 py-3 flex-row items-center'>
+                    <TextInput
+                        className='flex-1 text-gray-800 text-base'
+                        placeholder='Buscar...'
+                        placeholderTextColor='#9CA3AF'
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                    />
+                    <Ionicons name="search" size={20} color="#8B4513" />
+                </View>
+            </View>
+            
+            {/* Conteúdo Principal - Lista de Laboratórios */}
+            <ScrollView className='flex-1 px-4 py-2'>
+                <Text className='text-xl font-bold text-green-700 mb-4'>
+                    Laboratórios
+                </Text>
+                
+                {LABORATORIES.map((lab) => (
+                    <TouchableOpacity
+                        key={lab.id}
+                        className='bg-green-600 rounded-lg p-4 mb-3 flex-row items-center'
+                        onPress={() => handleLaboratoryPress(lab.id)}
+                        activeOpacity={0.8}
+                    >
+                        {/* Ícone de Computador */}
+                        <MaterialIcons name="computer" size={32} color="#B8E6B8" />
+                        
+                        {/* Nome do Laboratório */}
+                        <Text className='flex-1 text-green-50 font-semibold text-base ml-4'>
+                            {lab.name}
+                        </Text>
+                        
+                        {/* Botão de Seta */}
+                        <TouchableOpacity className='w-8 h-8 bg-gray-300 rounded-full justify-center items-center' activeOpacity={0.7}>
+                            <Ionicons name="chevron-down" size={20} color="#4B5563" />
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+            
+            {/* Bottom Navigation Bar */}
+            <View className='bg-green-700 rounded-t-3xl px-6 py-4 flex-row justify-around items-center'>
+                {/* Início - Ativo */}
+                <TouchableOpacity className='bg-green-500 rounded-full px-6 py-2 flex-row items-center' activeOpacity={0.7}>
+                    <Ionicons name="home" size={20} color="white" />
+                    <Text className='text-white font-semibold ml-2 text-sm'>
+                        Início
+                    </Text>
+                </TouchableOpacity>
+                
+                {/* Reservas */}
+                <TouchableOpacity className='px-6 py-2' activeOpacity={0.7}>
+                    <Text className='text-white font-semibold text-sm'>
+                        Reservas
+                    </Text>
+                </TouchableOpacity>
+                
+                {/* Perfil */}
+                <TouchableOpacity className='px-6 py-2' activeOpacity={0.7}>
+                    <Text className='text-white font-semibold text-sm'>
+                        Perfil
+                    </Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
-};
-
-export default Dashboard;
+}
