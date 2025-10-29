@@ -25,7 +25,7 @@ export default function SignIn() {
             />
             
             {/* Título SISREV */}
-            <Text className='text-3xl font-bold text-green-600 mb-12'>
+            <Text className='text-4xl font-black text-green-700 mb-12'>
                 SISREV
             </Text>
             

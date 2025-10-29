@@ -60,7 +60,7 @@ export default function SignUp() {
             />
             
             {/* Título SISREV */}
-            <Text className='text-3xl font-bold text-green-700 mb-8'>
+            <Text className='text-4xl font-black text-green-700 mb-8'>
                 SISREV
             </Text>
             

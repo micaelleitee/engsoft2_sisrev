@@ -37,7 +37,7 @@ export default function Dashboard() {
                             className='w-8 h-8 mr-2'
                             resizeMode='contain'
                         />
-                        <Text className='text-2xl font-bold text-green-700'>
+                        <Text className='text-4xl font-black text-green-700'>
                             SISREV
                         </Text>
                     </View>
@@ -49,9 +49,9 @@ export default function Dashboard() {
                 </View>
                 
                 {/* Barra de Busca */}
-                <View className='bg-white border border-gray-300 rounded-full px-4 py-3 flex-row items-center'>
+                <View className='bg-white border border-gray-300 rounded-full px-4 flex-row items-center h-12'>
                     <TextInput
-                        className='flex-1 text-gray-800 text-base'
+                        className='flex-1 text-gray-800 text-base h-10'
                         placeholder='Buscar...'
                         placeholderTextColor='#9CA3AF'
                         value={searchQuery}
@@ -70,7 +70,7 @@ export default function Dashboard() {
                 {LABORATORIES.map((lab) => (
                     <TouchableOpacity
                         key={lab.id}
-                        className='bg-green-600 rounded-lg p-4 mb-3 flex-row items-center'
+                        className='bg-green-600 rounded-full p-4 mb-3 flex-row items-center'
                         onPress={() => handleLaboratoryPress(lab.id)}
                         activeOpacity={0.8}
                     >
