@@ -1,24 +1,14 @@
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Animated, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Profile() {
     const [activeTab, setActiveTab] = useState('profile');
-    const [sliderAnimation] = useState(new Animated.Value(2));
     const router = useRouter();
 
     const handleTabPress = (tab: string) => {
         if (tab === activeTab) return;
-
-        // Animação do slider
-        const targetPosition = tab === 'home' ? 0 : tab === 'reservations' ? 1 : 2;
-        
-        Animated.timing(sliderAnimation, {
-            toValue: targetPosition,
-            duration: 300,
-            useNativeDriver: false,
-        }).start();
 
         setActiveTab(tab);
 
@@ -89,21 +79,11 @@ export default function Profile() {
                     elevation: 5,
                 }}
             >
-                {/* Slider animado */}
-                <Animated.View
-                    className='absolute bg-green-500 rounded-full h-10'
-                    style={{
-                        width: 80,
-                        left: sliderAnimation.interpolate({
-                            inputRange: [0, 1, 2],
-                            outputRange: [8, 88, 168], // Posições aproximadas dos botões
-                        }),
-                    }}
-                />
-                
                 {/* Início */}
                 <TouchableOpacity 
-                    className='px-6 py-2 flex-row items-center z-10' 
+                    className={`px-6 py-2 flex-row items-center rounded-full ${
+                        activeTab === 'home' ? 'bg-green-500' : ''
+                    }`}
                     activeOpacity={0.7}
                     onPress={() => handleTabPress('home')}
                 >
@@ -119,7 +99,9 @@ export default function Profile() {
                 
                 {/* Reservas */}
                 <TouchableOpacity 
-                    className='px-6 py-2 flex-row items-center z-10' 
+                    className={`px-6 py-2 flex-row items-center rounded-full ${
+                        activeTab === 'reservations' ? 'bg-green-500' : ''
+                    }`}
                     activeOpacity={0.7}
                     onPress={() => handleTabPress('reservations')}
                 >
@@ -135,7 +117,9 @@ export default function Profile() {
                 
                 {/* Perfil */}
                 <TouchableOpacity 
-                    className='px-6 py-2 flex-row items-center z-10' 
+                    className={`px-6 py-2 flex-row items-center rounded-full ${
+                        activeTab === 'profile' ? 'bg-green-500' : ''
+                    }`}
                     activeOpacity={0.7}
                     onPress={() => handleTabPress('profile')}
                 >
