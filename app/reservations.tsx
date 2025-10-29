@@ -3,25 +3,11 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Animated, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-// Mock de laboratórios - posteriormente virá do banco de dados
-const LABORATORIES = [
-    { id: 1, name: 'Laboratório 01' },
-    { id: 2, name: 'Laboratório 02' },
-    { id: 3, name: 'Laboratório 03' },
-    { id: 4, name: 'Laboratório 04' },
-    { id: 5, name: 'Laboratório 05' },
-];
-
-export default function Dashboard() {
+export default function Reservations() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState('home');
-    const [sliderAnimation] = useState(new Animated.Value(0));
+    const [activeTab, setActiveTab] = useState('reservations');
+    const [sliderAnimation] = useState(new Animated.Value(1));
     const router = useRouter();
-
-    const handleLaboratoryPress = (labId: number) => {
-        // Aqui você pode adicionar a navegação para detalhes do laboratório
-        console.log('Laboratório selecionado:', labId);
-    };
 
     const handleTabPress = (tab: string) => {
         if (tab === activeTab) return;
@@ -38,8 +24,8 @@ export default function Dashboard() {
         setActiveTab(tab);
 
         // Navegação
-        if (tab === 'reservations') {
-            router.replace('/reservations');
+        if (tab === 'home') {
+            router.replace('/dashboard');
         } else if (tab === 'profile') {
             router.replace('/profile');
         }
@@ -59,7 +45,7 @@ export default function Dashboard() {
                     {/* Logo SISREV */}
                     <View className='flex-row items-center'>
                         <Image 
-                            source={require('../../src/img/LogoIF.png')} 
+                            source={require('../src/img/LogoIF.png')} 
                             className='w-8 h-8 mr-2'
                             resizeMode='contain'
                         />
@@ -78,7 +64,7 @@ export default function Dashboard() {
                 <View className='bg-white border border-gray-300 rounded-full px-4 flex-row items-center h-12'>
                     <TextInput
                         className='flex-1 text-gray-800 text-base h-10'
-                        placeholder='Buscar...'
+                        placeholder='Buscar reservas...'
                         placeholderTextColor='#9CA3AF'
                         value={searchQuery}
                         onChangeText={setSearchQuery}
@@ -87,33 +73,22 @@ export default function Dashboard() {
                 </View>
             </View>
             
-            {/* Conteúdo Principal - Lista de Laboratórios */}
+            {/* Conteúdo Principal - Lista de Reservas */}
             <ScrollView className='flex-1 px-4 py-2 pb-20'>
                 <Text className='text-xl font-bold text-green-700 mb-4'>
-                    Laboratórios
+                    Minhas Reservas
                 </Text>
                 
-                {LABORATORIES.map((lab) => (
-                    <TouchableOpacity
-                        key={lab.id}
-                        className='bg-green-600 rounded-full p-4 mb-3 flex-row items-center'
-                        onPress={() => handleLaboratoryPress(lab.id)}
-                        activeOpacity={0.8}
-                    >
-                        {/* Ícone de Computador */}
-                        <MaterialIcons name="computer" size={32} color="#B8E6B8" />
-                        
-                        {/* Nome do Laboratório */}
-                        <Text className='flex-1 text-green-50 font-semibold text-base ml-4'>
-                            {lab.name}
-                        </Text>
-                        
-                        {/* Botão de Seta */}
-                        <TouchableOpacity className='w-8 h-8 bg-gray-300 rounded-full justify-center items-center' activeOpacity={0.7}>
-                            <Ionicons name="chevron-down" size={20} color="#4B5563" />
-                        </TouchableOpacity>
-                    </TouchableOpacity>
-                ))}
+                {/* Placeholder para reservas */}
+                <View className='bg-gray-100 rounded-lg p-8 items-center'>
+                    <MaterialIcons name="event" size={64} color="#9CA3AF" />
+                    <Text className='text-gray-500 text-lg font-semibold mt-4'>
+                        Nenhuma reserva encontrada
+                    </Text>
+                    <Text className='text-gray-400 text-center mt-2'>
+                        Faça sua primeira reserva de laboratório
+                    </Text>
+                </View>
             </ScrollView>
             
             {/* Bottom Navigation Bar - Flutuante */}

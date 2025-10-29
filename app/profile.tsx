@@ -1,27 +1,12 @@
-import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Animated, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-// Mock de laboratórios - posteriormente virá do banco de dados
-const LABORATORIES = [
-    { id: 1, name: 'Laboratório 01' },
-    { id: 2, name: 'Laboratório 02' },
-    { id: 3, name: 'Laboratório 03' },
-    { id: 4, name: 'Laboratório 04' },
-    { id: 5, name: 'Laboratório 05' },
-];
-
-export default function Dashboard() {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState('home');
-    const [sliderAnimation] = useState(new Animated.Value(0));
+export default function Profile() {
+    const [activeTab, setActiveTab] = useState('profile');
+    const [sliderAnimation] = useState(new Animated.Value(2));
     const router = useRouter();
-
-    const handleLaboratoryPress = (labId: number) => {
-        // Aqui você pode adicionar a navegação para detalhes do laboratório
-        console.log('Laboratório selecionado:', labId);
-    };
 
     const handleTabPress = (tab: string) => {
         if (tab === activeTab) return;
@@ -38,10 +23,10 @@ export default function Dashboard() {
         setActiveTab(tab);
 
         // Navegação
-        if (tab === 'reservations') {
+        if (tab === 'home') {
+            router.replace('/dashboard');
+        } else if (tab === 'reservations') {
             router.replace('/reservations');
-        } else if (tab === 'profile') {
-            router.replace('/profile');
         }
     };
 
@@ -59,7 +44,7 @@ export default function Dashboard() {
                     {/* Logo SISREV */}
                     <View className='flex-row items-center'>
                         <Image 
-                            source={require('../../src/img/LogoIF.png')} 
+                            source={require('../src/img/LogoIF.png')} 
                             className='w-8 h-8 mr-2'
                             resizeMode='contain'
                         />
@@ -73,47 +58,24 @@ export default function Dashboard() {
                         <Ionicons name="notifications-outline" size={28} color="#1C5E27" />
                     </TouchableOpacity>
                 </View>
-                
-                {/* Barra de Busca */}
-                <View className='bg-white border border-gray-300 rounded-full px-4 flex-row items-center h-12'>
-                    <TextInput
-                        className='flex-1 text-gray-800 text-base h-10'
-                        placeholder='Buscar...'
-                        placeholderTextColor='#9CA3AF'
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                    />
-                    <Ionicons name="search" size={20} color="#8B4513" />
-                </View>
             </View>
             
-            {/* Conteúdo Principal - Lista de Laboratórios */}
+            {/* Conteúdo Principal - Perfil */}
             <ScrollView className='flex-1 px-4 py-2 pb-20'>
                 <Text className='text-xl font-bold text-green-700 mb-4'>
-                    Laboratórios
+                    Meu Perfil
                 </Text>
                 
-                {LABORATORIES.map((lab) => (
-                    <TouchableOpacity
-                        key={lab.id}
-                        className='bg-green-600 rounded-full p-4 mb-3 flex-row items-center'
-                        onPress={() => handleLaboratoryPress(lab.id)}
-                        activeOpacity={0.8}
-                    >
-                        {/* Ícone de Computador */}
-                        <MaterialIcons name="computer" size={32} color="#B8E6B8" />
-                        
-                        {/* Nome do Laboratório */}
-                        <Text className='flex-1 text-green-50 font-semibold text-base ml-4'>
-                            {lab.name}
-                        </Text>
-                        
-                        {/* Botão de Seta */}
-                        <TouchableOpacity className='w-8 h-8 bg-gray-300 rounded-full justify-center items-center' activeOpacity={0.7}>
-                            <Ionicons name="chevron-down" size={20} color="#4B5563" />
-                        </TouchableOpacity>
-                    </TouchableOpacity>
-                ))}
+                {/* Placeholder para perfil */}
+                <View className='bg-gray-100 rounded-lg p-8 items-center'>
+                    <AntDesign name="user" size={64} color="#9CA3AF" />
+                    <Text className='text-gray-500 text-lg font-semibold mt-4'>
+                        Informações do usuário
+                    </Text>
+                    <Text className='text-gray-400 text-center mt-2'>
+                        Gerencie suas informações pessoais
+                    </Text>
+                </View>
             </ScrollView>
             
             {/* Bottom Navigation Bar - Flutuante */}
