@@ -78,7 +78,7 @@ export default function SignIn() {
                         <Text className='text-xs text-gray-500 mt-1 ml-1'>
                             {userType === 'aluno' 
                                 ? 'Use seu email institucional (@aluno.ifce.edu.br)'
-                                : 'Use seu email institucional (@professor.ifce.edu.br)'}
+                                : 'Use seu email institucional (@ifce.edu.br)'}
                         </Text>
                     )}
                 </View>
