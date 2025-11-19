@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -6,8 +6,36 @@ export default function SignIn() {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const { userType } = useLocalSearchParams<{ userType: 'aluno' | 'professor' }>();
+
+    const validateEmail = (email: string, type: 'aluno' | 'professor' | undefined): boolean => {
+        if (!type) return true; // Se não houver tipo, não valida (compatibilidade)
+        
+        const emailLower = email.toLowerCase().trim();
+        
+        if (type === 'aluno') {
+            return emailLower.endsWith('@aluno.ifce.edu.br');
+        } else if (type === 'professor') {
+            return emailLower.endsWith('@professor.ifce.edu.br');
+        }
+        
+        return true;
+    };
 
     const handleLogin = () => {
+        // Validação do email baseado no tipo de usuário
+        if (userType && !validateEmail(login, userType)) {
+            const expectedSuffix = userType === 'aluno' 
+                ? '@aluno.ifce.edu.br' 
+                : '@professor.ifce.edu.br';
+            Alert.alert(
+                'Email inválido', 
+                `O email deve terminar com ${expectedSuffix} para ${userType === 'aluno' ? 'alunos' : 'professores'}.`
+            );
+            return;
+        }
+
+        // Validação de login e senha (mantendo a lógica original)
         if (login.toLowerCase() === 'micael' && password === 'micael') {
             router.replace('/dashboard');
         } else {
@@ -34,17 +62,25 @@ export default function SignIn() {
                 {/* Campo de Login */}
                 <View className='mb-6'>
                     <Text className='text-green-700 font-semibold mb-3 text-base'>
-                        Login
+                        {userType === 'aluno' ? 'Email (Aluno)' : userType === 'professor' ? 'Email (Professor)' : 'Login'}
                     </Text>
                     <TextInput
                         className= 'border border-black rounded-full  p-3 text-gray-800 text-base'
-                        placeholder='Digite seu login'
+                        placeholder={userType === 'aluno' ? 'exemplo@aluno.ifce.edu.br' : userType === 'professor' ? 'exemplo@ifce.edu.br' : 'Digite seu login'}
                         placeholderTextColor='#1C5E27'
                         value={login}
                         onChangeText={setLogin}
                         autoCapitalize='none'
                         autoCorrect={false}
+                        keyboardType='email-address'
                     />
+                    {userType && (
+                        <Text className='text-xs text-gray-500 mt-1 ml-1'>
+                            {userType === 'aluno' 
+                                ? 'Use seu email institucional (@aluno.ifce.edu.br)'
+                                : 'Use seu email institucional (@professor.ifce.edu.br)'}
+                        </Text>
+                    )}
                 </View>
                 
                 {/* Campo de Senha */}
