@@ -1,7 +1,7 @@
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 // Mock de disciplinas - posteriormente virá do banco de dados
 const DISCIPLINAS = [
@@ -102,20 +102,14 @@ export default function Dashboard() {
                         </TouchableOpacity>
                         
                         {/* Logo SISREV */}
-                        <View className='flex-row items-center relative'>
-                            {/* Quadrado vermelho pequeno acima do SIS */}
-                            <View className='absolute -top-1 left-0 w-2 h-2 bg-red-500' />
-                            <Text className='text-3xl font-black' style={{ 
-                                fontFamily: 'monospace',
-                                color: '#90EE90',
-                                textShadowColor: '#90EE90',
-                                textShadowOffset: { width: 1, height: 1 },
-                                textShadowRadius: 1,
-                            }}>
-                                SIS
-                            </Text>
-                            <Text className='text-3xl font-black text-green-700 ml-1'>
-                                REV
+                        <View className='flex-row items-center'>
+                            <Image 
+                                source={require('../../src/img/LogoIF.png')} 
+                                className='w-8 h-8 mr-2'
+                                resizeMode='contain'
+                            />
+                            <Text className='text-4xl font-black text-green-700'>
+                                SISREV
                             </Text>
                         </View>
                         

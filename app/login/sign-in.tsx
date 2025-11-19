@@ -44,7 +44,7 @@ export default function SignIn() {
         }
 
         // Validação de login e senha
-        if (loginNormalized === 'micael@ifce.edu.br' && passwordNormalized === 'micael') {
+        if (loginNormalized === 'micael@aluno.ifce.edu.br' && passwordNormalized === 'micael') {
             // Redireciona baseado no tipo de usuário
             console.log('Login válido, redirecionando para:', userType);
             if (userType === 'aluno') {
