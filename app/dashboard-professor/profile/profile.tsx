@@ -14,7 +14,7 @@ export default function Profile() {
 
         // Navegação
         if (tab === 'home') {
-            router.replace('../dashboard-professor/index');
+            router.replace('/dashboard-professor');
         } else if (tab === 'reservations') {
             router.replace('/dashboard-professor/reservations/reservations');
         }

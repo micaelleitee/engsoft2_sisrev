@@ -44,13 +44,13 @@ export default function SignIn() {
         }
 
         // Validação de login e senha
-        if (loginNormalized === 'micael@aluno.ifce.edu.br' && passwordNormalized === 'micael') {
+        if (loginNormalized === 'micael@ifce.edu.br' && passwordNormalized === 'micael') {
             // Redireciona baseado no tipo de usuário
             console.log('Login válido, redirecionando para:', userType);
             if (userType === 'aluno') {
-                router.replace('../dashboard-aluno/index');
+                router.replace('/dashboard-aluno');
             } else if (userType === 'professor') {
-                router.replace('../dashboard-professor/index');
+                router.replace('/dashboard-professor');
             } else {
                 // Se não houver userType definido, mostra erro
                 Alert.alert('Erro', 'Tipo de usuário não identificado. Por favor, selecione o tipo de usuário novamente.');
