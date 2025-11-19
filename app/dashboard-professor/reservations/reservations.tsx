@@ -1,10 +1,11 @@
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function Profile() {
-    const [activeTab, setActiveTab] = useState('profile');
+export default function Reservations() {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState('reservations');
     const router = useRouter();
 
     const handleTabPress = (tab: string) => {
@@ -15,8 +16,8 @@ export default function Profile() {
         // Navegação
         if (tab === 'home') {
             router.replace('/dashboard');
-        } else if (tab === 'reservations') {
-            router.replace('/reservations');
+        } else if (tab === 'profile') {
+            router.replace('/profile');
         }
     };
 
@@ -34,7 +35,7 @@ export default function Profile() {
                     {/* Logo SISREV */}
                     <View className='flex-row items-center'>
                         <Image 
-                            source={require('../src/img/LogoIF.png')} 
+                            source={require('../../../src/img/LogoIF.png')} 
                             className='w-8 h-8 mr-2'
                             resizeMode='contain'
                         />
@@ -48,22 +49,34 @@ export default function Profile() {
                         <Ionicons name="notifications-outline" size={28} color="#1C5E27" />
                     </TouchableOpacity>
                 </View>
+                
+                {/* Barra de Busca */}
+                <View className='bg-white border border-gray-300 rounded-full px-4 flex-row items-center h-12'>
+                    <TextInput
+                        className='flex-1 text-gray-800 text-base h-10'
+                        placeholder='Buscar reservas...'
+                        placeholderTextColor='#9CA3AF'
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                    />
+                    <Ionicons name="search" size={20} color="#8B4513" />
+                </View>
             </View>
             
-            {/* Conteúdo Principal - Perfil */}
+            {/* Conteúdo Principal - Lista de Reservas */}
             <ScrollView className='flex-1 px-4 py-2 pb-20'>
                 <Text className='text-xl font-bold text-green-700 mb-4'>
-                    Meu Perfil
+                    Minhas Reservas
                 </Text>
                 
-                {/* Placeholder para perfil */}
+                {/* Placeholder para reservas */}
                 <View className='bg-gray-100 rounded-lg p-8 items-center'>
-                    <AntDesign name="user" size={64} color="#9CA3AF" />
+                    <MaterialIcons name="event" size={64} color="#9CA3AF" />
                     <Text className='text-gray-500 text-lg font-semibold mt-4'>
-                        Informações do usuário
+                        Nenhuma reserva encontrada
                     </Text>
                     <Text className='text-gray-400 text-center mt-2'>
-                        Gerencie suas informações pessoais
+                        Faça sua primeira reserva de laboratório
                     </Text>
                 </View>
             </ScrollView>

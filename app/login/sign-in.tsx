@@ -6,7 +6,10 @@ export default function SignIn() {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
-    const { userType } = useLocalSearchParams<{ userType: 'aluno' | 'professor' }>();
+    const params = useLocalSearchParams<{ userType: 'aluno' | 'professor' }>();
+    
+    // Normaliza userType para garantir que seja uma string (não array)
+    const userType = Array.isArray(params.userType) ? params.userType[0] : params.userType;
 
     const validateEmail = (email: string, type: 'aluno' | 'professor' | undefined): boolean => {
         if (!type) return true; // Se não houver tipo, não valida (compatibilidade)
@@ -16,18 +19,23 @@ export default function SignIn() {
         if (type === 'aluno') {
             return emailLower.endsWith('@aluno.ifce.edu.br');
         } else if (type === 'professor') {
-            return emailLower.endsWith('@professor.ifce.edu.br');
+            return emailLower.endsWith('@ifce.edu.br');
         }
         
         return true;
     };
 
     const handleLogin = () => {
-        // Validação do email baseado no tipo de usuário
-        if (userType && !validateEmail(login, userType)) {
+        const loginNormalized = login.toLowerCase().trim();
+        const passwordNormalized = password.trim();
+        
+        console.log('Login attempt:', { login: loginNormalized, password: passwordNormalized, userType });
+        
+        // Validação do email baseado no tipo de usuário (deve vir primeiro)
+        if (userType && !validateEmail(loginNormalized, userType)) {
             const expectedSuffix = userType === 'aluno' 
                 ? '@aluno.ifce.edu.br' 
-                : '@professor.ifce.edu.br';
+                : '@ifce.edu.br';
             Alert.alert(
                 'Email inválido', 
                 `O email deve terminar com ${expectedSuffix} para ${userType === 'aluno' ? 'alunos' : 'professores'}.`
@@ -35,9 +43,18 @@ export default function SignIn() {
             return;
         }
 
-        // Validação de login e senha (mantendo a lógica original)
-        if (login.toLowerCase() === 'micael' && password === 'micael') {
-            router.replace('/dashboard');
+        // Validação de login e senha
+        if (loginNormalized === 'micael@aluno.ifce.edu.br' && passwordNormalized === 'micael') {
+            // Redireciona baseado no tipo de usuário
+            console.log('Login válido, redirecionando para:', userType);
+            if (userType === 'aluno') {
+                router.replace('../dashboard-aluno/index');
+            } else if (userType === 'professor') {
+                router.replace('../dashboard-professor/index');
+            } else {
+                // Se não houver userType definido, mostra erro
+                Alert.alert('Erro', 'Tipo de usuário não identificado. Por favor, selecione o tipo de usuário novamente.');
+            }
         } else {
             Alert.alert('Erro', 'Login ou senha inválidos.');
         }
