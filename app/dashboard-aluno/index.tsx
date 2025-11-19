@@ -83,8 +83,8 @@ export default function Dashboard() {
 
         // Navegação
         if (tab === 'profile') {
-            // TODO: Criar rota de perfil do aluno
-            // router.replace('/dashboard-aluno/profile/profile');
+            //TODO: Criar rota de perfil do aluno
+            router.replace('./dashboard-aluno/profile/profile');
         }
     };
 
