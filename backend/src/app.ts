@@ -14,9 +14,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// rotas
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/labs", labRoutes);
-app.use("/reservation", reservationRoutes);
+app.use("/reservations", reservationRoutes);
+
+// rota health-check
+app.get("/", (req, res) => res.json({ status: "ok", timestamp: new Date() }));
 
 export default app;
