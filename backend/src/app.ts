@@ -20,7 +20,6 @@ app.use("/users", userRoutes);
 app.use("/labs", labRoutes);
 app.use("/reservations", reservationRoutes);
 
-// rota health-check
 app.get("/", (req, res) => res.json({ status: "ok", timestamp: new Date() }));
 
 export default app;

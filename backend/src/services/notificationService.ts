@@ -1,4 +1,5 @@
 export async function sendNotificationToUser(userId: number, message: string) {
-  // Implementar: enviar e-mail via nodemailer ou push via FCM / Expo
-  console.log(`Enviar notificação para user ${userId}: ${message}`);
+  // Aqui você integraria com nodemailer (email) ou push (FCM/Expo).
+  // No momento, logamos para desenvolvimento.
+  console.log(`[NOTIFICATION] user=${userId} message=${message}`);
 }

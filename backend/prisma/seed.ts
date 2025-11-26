@@ -1,37 +1,41 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
 const prisma = new PrismaClient();
 
 async function main() {
-  // cria labs
+  // cria dois labs
   await prisma.lab.upsert({
     where: { id: 1 },
     update: {},
-    create: { name: "Lab 01 - Informática", capacity: 30, status: "available" },
+    create: { name: "Lab 01 - Informática", capacity: 30 },
   });
+
   await prisma.lab.upsert({
     where: { id: 2 },
     update: {},
-    create: { name: "Lab 02 - Redes", capacity: 20, status: "available" },
+    create: { name: "Lab 02 - Redes", capacity: 20 },
   });
 
-  // cria usuário admin
-  const adminEmail = "admin@ifce.edu.br";
-  const admin = await prisma.user.upsert({
-    where: { email: adminEmail },
+  // cria admin com senha hashed
+  const email = "admin@ifce.edu.br";
+  const password = await bcrypt.hash("admin123", 10);
+  await prisma.user.upsert({
+    where: { email },
     update: {},
     create: {
       name: "Admin IFCE",
-      email: adminEmail,
-      password: "senha_temporaria_hash", // substitua por senha hash real se for usar
+      email,
+      password,
       role: "admin",
     },
   });
 
-  console.log({ admin });
+  console.log("Seed executado");
 }
 
 main()
-  .catch((e) => console.error(e))
+  .catch(console.error)
   .finally(async () => {
     await prisma.$disconnect();
   });

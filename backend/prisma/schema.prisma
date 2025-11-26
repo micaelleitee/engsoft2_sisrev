@@ -28,14 +28,13 @@ model Lab {
 }
 
 model Reservation {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  labId     Int
-  date      DateTime
-  startTime String
-  endTime   String
-  status    String   @default("pending")
-  createdAt DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  labId         Int
+  startDateTime DateTime
+  endDateTime   DateTime
+  status        String    @default("pending") // pending / confirmed / cancelled
+  createdAt     DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id])
   lab  Lab  @relation(fields: [labId], references: [id])
@@ -43,11 +42,11 @@ model Reservation {
 }
 
 model Notification {
-  id       Int      @id @default(autoincrement())
-  message  String
-  type     String
-  read     Boolean  @default(false)
-  userId   Int
+  id        Int      @id @default(autoincrement())
+  message   String
+  type      String
+  read      Boolean  @default(false)
+  userId    Int
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])

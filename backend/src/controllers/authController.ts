@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import prisma from "../prismaClient";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { handleError } from "../utils/handleErrors";
 
 const JWT_SECRET = process.env.JWT_SECRET || "changeme";
 
@@ -16,12 +17,12 @@ export const register = async (req: Request, res: Response) => {
     const hashed = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: { name, email, password: hashed, role: role || "teacher" },
-      select: { id: true, name: true, email: true, role: true },
+      select: { id: true, name: true, email: true, role: true }
     });
 
     return res.status(201).json(user);
   } catch (error) {
-    return res.status(500).json({ message: "Erro no registro", error });
+    return handleError(res, error);
   }
 };
 
@@ -40,6 +41,6 @@ export const login = async (req: Request, res: Response) => {
 
     return res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (error) {
-    return res.status(500).json({ message: "Erro no login", error });
+    return handleError(res, error);
   }
 };

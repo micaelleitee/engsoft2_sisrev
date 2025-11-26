@@ -1,11 +1,18 @@
 import { Request, Response } from "express";
 import prisma from "../prismaClient";
+import { handleError } from "../utils/handleErrors";
 
 export const listLabs = async (req: Request, res: Response) => {
-  const labs = await prisma.lab.findMany({
-    include: { reservations: true },
-  });
-  return res.json(labs);
+  try {
+    const labs = await prisma.lab.findMany({
+      include: {
+        _count: { select: { reservations: true } }
+      }
+    });
+    return res.json(labs);
+  } catch (error) {
+    return handleError(res, error);
+  }
 };
 
 export const createLab = async (req: Request, res: Response) => {
@@ -15,8 +22,7 @@ export const createLab = async (req: Request, res: Response) => {
 
     const lab = await prisma.lab.create({ data: { name, capacity, status: status || "available" } });
     return res.status(201).json(lab);
-  } catch (e) {
-    return res.status(500).json({ message: "Erro ao criar laboratório", error: e });
+  } catch (error) {
+    return handleError(res, error);
   }
 };
-
