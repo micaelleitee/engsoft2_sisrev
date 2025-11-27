@@ -1,9 +1,15 @@
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Profile() {
+    const router = useRouter();
+
+    const handleDadosPerfil = () => {
+        router.push('/dashboard-aluno/profile/dados-perfil');
+    };
 
     return (
         <View className='flex-1 py-20' >            
@@ -22,6 +28,7 @@ export default function Profile() {
                     <TouchableOpacity
                         className='flex-row justify-between items-center py-4 border-b border-gray-200'
                         activeOpacity={0.7}
+                        onPress={handleDadosPerfil}
                     >
                         <Text className='text-green-700 text-base font-medium'>
                             Dados do perfil
