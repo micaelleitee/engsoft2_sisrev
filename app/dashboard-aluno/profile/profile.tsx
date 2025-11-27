@@ -1,6 +1,7 @@
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Profile() {
 
@@ -51,6 +52,19 @@ export default function Profile() {
                     </Text>
                 </View>
             </ScrollView>
+
+            {/* Gradiente na parte inferior para transição com o navigation bar */}
+            <LinearGradient
+                colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)']}
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 100,
+                    pointerEvents: 'none',
+                }}
+            />
         </View>
     );
 }
