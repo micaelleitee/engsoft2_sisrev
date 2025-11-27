@@ -6,7 +6,7 @@ export default function Reservations() {
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
-        <View className='flex-1 bg-white'>
+        <View className='flex-1'>
             {/* Header */}
             <View className='bg-white pt-12 pb-4 px-4'>
                 {/* Top Row - Icons */}
@@ -48,7 +48,7 @@ export default function Reservations() {
             </View>
             
             {/* Conteúdo Principal - Lista de Reservas */}
-            <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 100 }}>
+            <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 20 }}>
                 <Text className='text-xl font-bold text-green-700 mb-4'>
                     Minhas Reservas
                 </Text>
