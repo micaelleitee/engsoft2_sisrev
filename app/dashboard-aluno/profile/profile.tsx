@@ -5,7 +5,7 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 export default function Profile() {
 
     return (
-        <View className='flex-1'>
+        <View className='flex-1' >
             {/* Header */}
             <View className='bg-white pt-12 pb-4 px-4'>
                 {/* Top Row - Icons */}

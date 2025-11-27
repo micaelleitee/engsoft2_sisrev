@@ -116,7 +116,7 @@ export default function Dashboard() {
             </View>
             
             {/* Conteúdo Principal - Lista de Disciplinas */}
-            <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 20 }}>
+            <ScrollView className='flex-1 px-4' contentContainerStyle={{ paddingTop: 8, paddingBottom: 8 }}>
                 {filteredDisciplinas.map((disciplina, index) => (
                     <TouchableOpacity
                         key={index}

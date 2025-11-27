@@ -3,14 +3,14 @@ import '../global.css';
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="dashboard-aluno/index" options={{ headerShown: false }} />
-      <Stack.Screen name="dashboard-professor/index" options={{ headerShown: false }} />
-      <Stack.Screen name="dashboard/index" options={{ headerShown: false }} />
-      <Stack.Screen name="reservations" options={{ headerShown: false }} />
-      <Stack.Screen name="profile" options={{ headerShown: false }} />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="login" />
+      <Stack.Screen name="dashboard-aluno" />
+      <Stack.Screen name="dashboard-professor" />
+      <Stack.Screen name="dashboard" />
+      <Stack.Screen name="reservations" />
+      <Stack.Screen name="profile" />
     </Stack>
   );
 }
