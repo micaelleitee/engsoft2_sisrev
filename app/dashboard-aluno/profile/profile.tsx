@@ -29,7 +29,7 @@ export default function Profile() {
         setShowLogoutModal(false);
         // Aqui você pode adicionar a lógica de logout
         console.log('Usuário saiu');
-        router.replace('/login');
+        router.replace('/');
     };
 
     const handleCancelLogout = () => {
