@@ -15,6 +15,10 @@ export default function Profile() {
         router.push('/dashboard-aluno/profile/notificacao');
     };
 
+    const handleSuporte = () => {
+        router.push('/dashboard-aluno/profile/suporte');
+    };
+
     return (
         <View className='flex-1 py-20' >            
             {/* Conteúdo Principal - Perfil */}
@@ -56,6 +60,7 @@ export default function Profile() {
                     <TouchableOpacity
                         className='flex-row justify-between items-center py-4 border-b border-gray-200'
                         activeOpacity={0.7}
+                        onPress={handleSuporte}
                     >
                         <Text className='text-green-700 text-base font-medium'>
                             Acesso ao suporte

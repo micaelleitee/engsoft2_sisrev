@@ -34,6 +34,7 @@ function DashboardAlunoLayout() {
                     <Stack.Screen name="profile/dados-perfil" />
                     <Stack.Screen name="profile/notificacao" />
                     <Stack.Screen name="profile/notificacao-detalhes" />
+                    <Stack.Screen name="profile/suporte" />
                 </Stack>
             </View>
             {/* Navigation bar fixo na tela, fora do card */}
