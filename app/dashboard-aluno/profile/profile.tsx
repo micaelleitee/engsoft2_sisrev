@@ -1,11 +1,13 @@
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Profile() {
     const router = useRouter();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     const handleDadosPerfil = () => {
         router.push('/dashboard-aluno/profile/dados-perfil');
@@ -17,6 +19,21 @@ export default function Profile() {
 
     const handleSuporte = () => {
         router.push('/dashboard-aluno/profile/suporte');
+    };
+
+    const handleSairClick = () => {
+        setShowLogoutModal(true);
+    };
+
+    const handleConfirmLogout = () => {
+        setShowLogoutModal(false);
+        // Aqui você pode adicionar a lógica de logout
+        console.log('Usuário saiu');
+        router.replace('/login');
+    };
+
+    const handleCancelLogout = () => {
+        setShowLogoutModal(false);
     };
 
     return (
@@ -72,6 +89,7 @@ export default function Profile() {
                     <TouchableOpacity
                         className='flex-row justify-between items-center py-4 border-b border-gray-200'
                         activeOpacity={0.7}
+                        onPress={handleSairClick}
                     >
                         <Text className='text-green-700 text-base font-medium'>
                             Sair da conta
@@ -93,6 +111,67 @@ export default function Profile() {
                     pointerEvents: 'none',
                 }}
             />
+
+            {/* Modal de confirmação de logout */}
+            <Modal
+                visible={showLogoutModal}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={handleCancelLogout}
+            >
+                <BlurView
+                    intensity={90}
+                    tint="dark"
+                    style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                    }}
+                >
+                    <View className='bg-white rounded-3xl mx-8 p-6 w-80'>
+                        {/* Ícone de alerta */}
+                        <View className='items-center mb-4'>
+                            <View className='w-16 h-16 bg-yellow-100 rounded-full justify-center items-center'>
+                                <Ionicons name="warning" size={32} color="#F59E0B" />
+                            </View>
+                        </View>
+
+                        {/* Título */}
+                        <Text className='text-gray-800 text-lg font-bold text-center mb-2'>
+                            Sair da conta
+                        </Text>
+
+                        {/* Mensagem */}
+                        <Text className='text-gray-600 text-center mb-6'>
+                            Tem certeza que deseja sair da sua conta?
+                        </Text>
+
+                        {/* Botões */}
+                        <View className='flex-row gap-3'>
+                            <TouchableOpacity
+                                className='flex-1 bg-gray-300 rounded-full py-3 justify-center items-center'
+                                onPress={handleCancelLogout}
+                                activeOpacity={0.8}
+                            >
+                                <Text className='text-gray-700 font-semibold text-base'>
+                                    Cancelar
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                className='flex-1 bg-red-500 rounded-full py-3 justify-center items-center'
+                                onPress={handleConfirmLogout}
+                                activeOpacity={0.8}
+                            >
+                                <Text className='text-white font-semibold text-base'>
+                                    Sair
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </BlurView>
+            </Modal>
         </View>
     );
 }
