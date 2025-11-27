@@ -30,6 +30,7 @@ function DashboardAlunoLayout() {
                     }}
                 >
                     <Stack.Screen name="index" />
+                    <Stack.Screen name="disciplina-detalhes" />
                     <Stack.Screen name="profile/profile" />
                     <Stack.Screen name="profile/dados-perfil" />
                     <Stack.Screen name="profile/notificacao" />
