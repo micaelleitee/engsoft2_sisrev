@@ -141,15 +141,15 @@ export default function Dashboard() {
                 ))}
             </ScrollView>
 
-            {/* Gradiente na parte inferior para transição com o navigation bar */}
+            {/* Gradiente na parte inferior alinhado com o navigation bar */}
             <LinearGradient
-                colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)']}
+                colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.9)', 'rgba(255, 255, 255, 1)']}
                 style={{
                     position: 'absolute',
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    height: 100,
+                    height: 88,
                     pointerEvents: 'none',
                 }}
             />
