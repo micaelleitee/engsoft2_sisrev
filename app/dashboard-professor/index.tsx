@@ -20,7 +20,7 @@ export default function Dashboard() {
     };
 
     return (
-        <View className='flex-1 bg-white'>
+        <View className='flex-1'>
             {/* Header */}
             <View className='bg-white pt-12 pb-4 px-4'>
                 {/* Top Row - Icons */}
@@ -61,34 +61,34 @@ export default function Dashboard() {
                 </View>
             </View>
             
-                {/* Conteúdo Principal - Lista de Laboratórios */}
-                <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 100 }}>
-                    <Text className='text-xl font-bold text-green-700 mb-4'>
-                        Laboratórios
-                    </Text>
-                    
-                    {LABORATORIES.map((lab) => (
-                        <TouchableOpacity
-                            key={lab.id}
-                            className='bg-green-600 rounded-full p-4 mb-3 flex-row items-center'
-                            onPress={() => handleLaboratoryPress(lab.id)}
-                            activeOpacity={0.8}
-                        >
-                            {/* Ícone de Computador */}
-                            <MaterialIcons name="computer" size={32} color="#B8E6B8" />
-                            
-                            {/* Nome do Laboratório */}
-                            <Text className='flex-1 text-green-50 font-semibold text-base ml-4'>
-                                {lab.name}
-                            </Text>
-                            
-                            {/* Botão de Seta */}
-                            <TouchableOpacity className='w-8 h-8 bg-gray-300 rounded-full justify-center items-center' activeOpacity={0.7}>
-                                <Ionicons name="chevron-down" size={20} color="#4B5563" />
-                            </TouchableOpacity>
+            {/* Conteúdo Principal - Lista de Laboratórios */}
+            <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 20 }}>
+                <Text className='text-xl font-bold text-green-700 mb-4'>
+                    Laboratórios
+                </Text>
+                
+                {LABORATORIES.map((lab) => (
+                    <TouchableOpacity
+                        key={lab.id}
+                        className='bg-green-600 rounded-full p-4 mb-3 flex-row items-center'
+                        onPress={() => handleLaboratoryPress(lab.id)}
+                        activeOpacity={0.8}
+                    >
+                        {/* Ícone de Computador */}
+                        <MaterialIcons name="computer" size={32} color="#B8E6B8" />
+                        
+                        {/* Nome do Laboratório */}
+                        <Text className='flex-1 text-green-50 font-semibold text-base ml-4'>
+                            {lab.name}
+                        </Text>
+                        
+                        {/* Botão de Seta */}
+                        <TouchableOpacity className='w-8 h-8 bg-gray-300 rounded-full justify-center items-center' activeOpacity={0.7}>
+                            <Ionicons name="chevron-down" size={20} color="#4B5563" />
                         </TouchableOpacity>
-                    ))}
-                </ScrollView>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         </View>
     );
 }

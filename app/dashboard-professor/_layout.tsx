@@ -26,17 +26,21 @@ function DashboardProfessorLayout() {
     ], []);
 
     return (
-        <View style={{ flex: 1 }}>
-            <Stack
-                screenOptions={{
-                    headerShown: false,
-                    contentStyle: { backgroundColor: 'transparent', paddingBottom: 100 },
-                }}
-            >
-                <Stack.Screen name="index" />
-                <Stack.Screen name="reservations/reservations" />
-                <Stack.Screen name="profile/profile" />
-            </Stack>
+        <View style={{ flex: 1, backgroundColor: '#E5E7EB' }}>
+            {/* Card fixo que envolve todo o conteúdo */}
+            <View style={{ flex: 1, margin: 8, backgroundColor: 'white', borderRadius: 8, overflow: 'hidden' }}>
+                <Stack
+                    screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: 'transparent', flex: 1 },
+                    }}
+                >
+                    <Stack.Screen name="index" />
+                    <Stack.Screen name="reservations/reservations" />
+                    <Stack.Screen name="profile/profile" />
+                </Stack>
+            </View>
+            {/* Navigation bar fixo na tela, fora do card */}
             <BottomNavigationBar tabs={tabs} baseRoute="/dashboard-professor" />
         </View>
     );

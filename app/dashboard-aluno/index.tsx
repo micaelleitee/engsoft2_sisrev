@@ -74,74 +74,71 @@ export default function Dashboard() {
     };
 
     return (
-        <View className='flex-1 bg-gray-200'>
-            {/* Container principal com borda */}
-            <View className='flex-1 m-2 bg-white rounded-lg'>
-                {/* Header */}
-                <View className='bg-white pt-12 pb-4 px-4'>
-                    {/* Top Row - Icons */}
-                    <View className='flex-row justify-between items-center mb-4'>
-                        {/* Ícone de Perfil */}
-                        <TouchableOpacity className='w-12 h-12 bg-green-700 rounded-full justify-center items-center' activeOpacity={0.7}>
-                            <AntDesign name="user" size={24} color="white" />
-                        </TouchableOpacity>
-                        
-                        {/* Logo SISREV */}
-                        <View className='flex-row items-center'>
-                            <Image 
-                                source={require('../../src/img/LogoIF.png')} 
-                                className='w-8 h-8 mr-2'
-                                resizeMode='contain'
-                            />
-                            <Text className='text-4xl font-black text-green-700'>
-                                SISREV
-                            </Text>
-                        </View>
-                        
-                        {/* Ícone de Notificações */}
-                        <TouchableOpacity className='w-10 h-10 justify-center items-center' activeOpacity={0.7}>
-                            <Ionicons name="notifications-outline" size={28} color="#1C5E27" />
-                        </TouchableOpacity>
+        <View className='flex-1'>
+            {/* Header */}
+            <View className='bg-white pt-12 pb-4 px-4'>
+                {/* Top Row - Icons */}
+                <View className='flex-row justify-between items-center mb-4'>
+                    {/* Ícone de Perfil */}
+                    <TouchableOpacity className='w-12 h-12 bg-green-700 rounded-full justify-center items-center' activeOpacity={0.7}>
+                        <AntDesign name="user" size={24} color="white" />
+                    </TouchableOpacity>
+                    
+                    {/* Logo SISREV */}
+                    <View className='flex-row items-center'>
+                        <Image 
+                            source={require('../../src/img/LogoIF.png')} 
+                            className='w-8 h-8 mr-2'
+                            resizeMode='contain'
+                        />
+                        <Text className='text-4xl font-black text-green-700'>
+                            SISREV
+                        </Text>
                     </View>
                     
-                    {/* Barra de Busca */}
-                    <View className='bg-white border border-gray-400 rounded-full px-4 flex-row items-center h-12'>
-                        <TextInput
-                            className='flex-1 text-gray-800 text-base h-10'
-                            placeholder='Buscar...'
-                            placeholderTextColor='#9CA3AF'
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                        />
-                        <Ionicons name="search" size={20} color="#4B5563" />
-                    </View>
+                    {/* Ícone de Notificações */}
+                    <TouchableOpacity className='w-10 h-10 justify-center items-center' activeOpacity={0.7}>
+                        <Ionicons name="notifications-outline" size={28} color="#1C5E27" />
+                    </TouchableOpacity>
                 </View>
                 
-                {/* Conteúdo Principal - Lista de Disciplinas */}
-                <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 100 }}>
-                    {filteredDisciplinas.map((disciplina, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            className='bg-green-600 rounded-full p-4 mb-3 flex-row items-center'
-                            onPress={() => handleDisciplinaPress(disciplina)}
-                            activeOpacity={0.8}
-                        >
-                            {/* Ícone de Computador */}
-                            <MaterialIcons name="computer" size={28} color="#E8F5E9" />
-                            
-                            {/* Nome da Disciplina */}
-                            <Text className='flex-1 text-green-50 font-semibold text-base ml-4'>
-                                {disciplina}
-                            </Text>
-                            
-                            {/* Botão de Seta */}
-                            <View className='w-8 h-8 bg-gray-300 rounded-full justify-center items-center'>
-                                <Ionicons name="chevron-down" size={18} color="#4B5563" />
-                            </View>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
+                {/* Barra de Busca */}
+                <View className='bg-white border border-gray-400 rounded-full px-4 flex-row items-center h-12'>
+                    <TextInput
+                        className='flex-1 text-gray-800 text-base h-10'
+                        placeholder='Buscar...'
+                        placeholderTextColor='#9CA3AF'
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                    />
+                    <Ionicons name="search" size={20} color="#4B5563" />
+                </View>
             </View>
+            
+            {/* Conteúdo Principal - Lista de Disciplinas */}
+            <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 20 }}>
+                {filteredDisciplinas.map((disciplina, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        className='bg-green-600 rounded-full p-4 mb-3 flex-row items-center'
+                        onPress={() => handleDisciplinaPress(disciplina)}
+                        activeOpacity={0.8}
+                    >
+                        {/* Ícone de Computador */}
+                        <MaterialIcons name="computer" size={28} color="#E8F5E9" />
+                        
+                        {/* Nome da Disciplina */}
+                        <Text className='flex-1 text-green-50 font-semibold text-base ml-4'>
+                            {disciplina}
+                        </Text>
+                        
+                        {/* Botão de Seta */}
+                        <View className='w-8 h-8 bg-gray-300 rounded-full justify-center items-center'>
+                            <Ionicons name="chevron-down" size={18} color="#4B5563" />
+                        </View>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         </View>
     );
 }
