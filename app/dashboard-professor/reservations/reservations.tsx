@@ -15,9 +15,9 @@ export default function Reservations() {
 
         // Navegação
         if (tab === 'home') {
-            router.replace('/dashboard');
+            router.replace('/dashboard-professor');
         } else if (tab === 'profile') {
-            router.replace('/profile');
+            router.replace('/dashboard-professor/profile/profile');
         }
     };
 
