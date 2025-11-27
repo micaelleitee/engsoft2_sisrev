@@ -1,5 +1,4 @@
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -58,8 +57,6 @@ const DISCIPLINAS = [
 
 export default function Dashboard() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState('home');
-    const router = useRouter();
 
     // Filtrar disciplinas baseado na busca
     const filteredDisciplinas = useMemo(() => {
@@ -74,17 +71,6 @@ export default function Dashboard() {
     const handleDisciplinaPress = (disciplina: string) => {
         // Aqui você pode adicionar a navegação para detalhes da disciplina
         console.log('Disciplina selecionada:', disciplina);
-    };
-
-    const handleTabPress = (tab: string) => {
-        if (tab === activeTab) return;
-
-        setActiveTab(tab);
-
-        // Navegação
-        if (tab === 'profile') {
-            router.replace('/dashboard-aluno/profile/profile');
-        }
     };
 
     return (
@@ -132,7 +118,7 @@ export default function Dashboard() {
                 </View>
                 
                 {/* Conteúdo Principal - Lista de Disciplinas */}
-                <ScrollView className='flex-1 px-4 py-2 pb-20'>
+                <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 100 }}>
                     {filteredDisciplinas.map((disciplina, index) => (
                         <TouchableOpacity
                             key={index}
@@ -155,54 +141,6 @@ export default function Dashboard() {
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
-                
-                {/* Bottom Navigation Bar - Flutuante */}
-                <View 
-                    className='bg-green-700 rounded-full mx-8 mb-4 px-6 py-3 flex-row justify-around items-center'
-                    style={{
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 3.84,
-                        elevation: 5,
-                    }}
-                >
-                    {/* Início */}
-                    <TouchableOpacity 
-                        className={`px-6 py-2 flex-row items-center rounded-full ${
-                            activeTab === 'home' ? 'bg-green-500' : ''
-                        }`}
-                        activeOpacity={0.7}
-                        onPress={() => handleTabPress('home')}
-                    >
-                        <Ionicons 
-                            name={activeTab === 'home' ? 'home' : 'home-outline'} 
-                            size={20} 
-                            color="white" 
-                        />
-                        <Text className='text-white font-semibold ml-2 text-sm'>
-                            Início
-                        </Text>
-                    </TouchableOpacity>
-                    
-                    {/* Perfil */}
-                    <TouchableOpacity 
-                        className={`px-6 py-2 flex-row items-center rounded-full ${
-                            activeTab === 'profile' ? 'bg-green-500' : ''
-                        }`}
-                        activeOpacity={0.7}
-                        onPress={() => handleTabPress('profile')}
-                    >
-                        <Ionicons 
-                            name={activeTab === 'profile' ? 'person' : 'person-outline'} 
-                            size={20} 
-                            color="white" 
-                        />
-                        <Text className='text-white font-semibold ml-2 text-sm'>
-                            Perfil
-                        </Text>
-                    </TouchableOpacity>
-                </View>
             </View>
         </View>
     );

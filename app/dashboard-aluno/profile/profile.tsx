@@ -1,22 +1,8 @@
 import { AntDesign, Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Profile() {
-    const [activeTab, setActiveTab] = useState('profile');
-    const router = useRouter();
-
-    const handleTabPress = (tab: string) => {
-        if (tab === activeTab) return;
-
-        setActiveTab(tab);
-
-        // Navegação
-        if (tab === 'home') {
-            router.replace('/dashboard-aluno');
-        }
-    };
 
     return (
         <View className='flex-1 bg-white'>
@@ -49,7 +35,7 @@ export default function Profile() {
             </View>
             
             {/* Conteúdo Principal - Perfil */}
-            <ScrollView className='flex-1 px-4 py-2 pb-20'>
+            <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 100 }}>
                 <Text className='text-xl font-bold text-green-700 mb-4'>
                     Meu Perfil
                 </Text>
@@ -65,55 +51,6 @@ export default function Profile() {
                     </Text>
                 </View>
             </ScrollView>
-            
-            {/* Bottom Navigation Bar - Flutuante */}
-            <View 
-                className='bg-green-700 rounded-full mx-8 mb-4 px-6 py-3 flex-row justify-around items-center'
-                style={{
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.84,
-                    elevation: 5,
-                }}
-            >
-                {/* Início */}
-                <TouchableOpacity 
-                    className={`px-6 py-2 flex-row items-center rounded-full ${
-                        activeTab === 'home' ? 'bg-green-500' : ''
-                    }`}
-                    activeOpacity={0.7}
-                    onPress={() => handleTabPress('home')}
-                >
-                    <Ionicons 
-                        name={activeTab === 'home' ? 'home' : 'home-outline'} 
-                        size={20} 
-                        color="white" 
-                    />
-                    <Text className='text-white font-semibold ml-2 text-sm'>
-                        Início
-                    </Text>
-                </TouchableOpacity>
-                
-                
-                {/* Perfil */}
-                <TouchableOpacity 
-                    className={`px-6 py-2 flex-row items-center rounded-full ${
-                        activeTab === 'profile' ? 'bg-green-500' : ''
-                    }`}
-                    activeOpacity={0.7}
-                    onPress={() => handleTabPress('profile')}
-                >
-                    <Ionicons 
-                        name={activeTab === 'profile' ? 'person' : 'person-outline'} 
-                        size={20} 
-                        color="white" 
-                    />
-                    <Text className='text-white font-semibold ml-2 text-sm'>
-                        Perfil
-                    </Text>
-                </TouchableOpacity>
-            </View>
         </View>
     );
 }
