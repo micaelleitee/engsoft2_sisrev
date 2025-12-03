@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -10,6 +10,7 @@ export default function ConfirmarReserva() {
     const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null);
     const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<string>('Engenharia de Software 1');
     const [concordaTermos, setConcordaTermos] = useState(false);
+    const [dropdownAberto, setDropdownAberto] = useState(false);
 
     // Horários disponíveis
     const horariosDisponiveis = [
@@ -74,7 +75,11 @@ export default function ConfirmarReserva() {
                 </View>
             </View>
 
-            <ScrollView className='flex-1 px-6 py-6'>
+            <ScrollView
+                className='flex-1 px-6 py-6'
+                contentContainerStyle={{ paddingBottom: 120 }}
+                showsVerticalScrollIndicator={true}
+            >
                 {/* Card do Laboratório */}
                 <View className='bg-green-700 rounded-full py-3 px-6 mb-6 flex-row items-center justify-center'>
                     <Ionicons name="flask" size={20} color="white" />
@@ -124,23 +129,44 @@ export default function ConfirmarReserva() {
 
                 {/* Seleção de Disciplina */}
                 <Text className='text-gray-700 text-base font-semibold mb-3'>Disciplina:</Text>
-                <View className='border-2 border-gray-300 rounded-xl mb-6 overflow-hidden'>
-                    <View className='bg-white'>
-                        {disciplinas.map((disciplina, index) => (
-                            <TouchableOpacity
-                                key={disciplina}
-                                onPress={() => setDisciplinaSelecionada(disciplina)}
-                                className={`py-3 px-4 flex-row items-center justify-between ${
-                                    index < disciplinas.length - 1 ? 'border-b border-gray-200' : ''
-                                }`}
-                            >
-                                <Text className='text-gray-700 text-base'>{disciplina}</Text>
-                                {disciplinaSelecionada === disciplina && (
-                                    <Ionicons name="checkmark-circle" size={24} color="#15803d" />
-                                )}
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+                <View className='mb-6'>
+                    <TouchableOpacity
+                        onPress={() => setDropdownAberto(!dropdownAberto)}
+                        className='border-2 border-gray-300 rounded-xl px-4 py-3 flex-row items-center justify-between bg-white'
+                    >
+                        <Text className='text-gray-700 text-base'>{disciplinaSelecionada}</Text>
+                        <Ionicons
+                            name={dropdownAberto ? "chevron-up" : "chevron-down"}
+                            size={24}
+                            color="#6b7280"
+                        />
+                    </TouchableOpacity>
+
+                    {dropdownAberto && (
+                        <View className='border-2 border-gray-300 border-t-0 rounded-b-xl overflow-hidden bg-white'>
+                            {disciplinas.map((disciplina, index) => (
+                                <TouchableOpacity
+                                    key={disciplina}
+                                    onPress={() => {
+                                        setDisciplinaSelecionada(disciplina);
+                                        setDropdownAberto(false);
+                                    }}
+                                    className={`py-3 px-4 flex-row items-center justify-between ${
+                                        disciplinaSelecionada === disciplina ? 'bg-green-50' : 'bg-white'
+                                    } ${index < disciplinas.length - 1 ? 'border-b border-gray-200' : ''}`}
+                                >
+                                    <Text className={`text-base ${
+                                        disciplinaSelecionada === disciplina ? 'text-green-700 font-semibold' : 'text-gray-700'
+                                    }`}>
+                                        {disciplina}
+                                    </Text>
+                                    {disciplinaSelecionada === disciplina && (
+                                        <Ionicons name="checkmark-circle" size={24} color="#15803d" />
+                                    )}
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    )}
                 </View>
 
                 {/* Checkbox Termos */}
