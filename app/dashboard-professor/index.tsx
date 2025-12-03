@@ -171,36 +171,37 @@ export default function Dashboard() {
                             {isExpanded && (
                                 <View className='bg-green-600 rounded-b-3xl px-4 pb-4'>
                                     {/* Calendário da semana */}
-                                    <View className='flex-row justify-around items-center mb-4 mt-2'>
+                                    <View className='flex-row justify-around items-start mb-4 mt-2'>
                                         {diasSemana.map((dia) => {
                                             const isOcupado = isDiaOcupado(lab.reservas, dia);
                                             const reservaInfo = getReservaInfo(lab.reservas, dia);
 
                                             return (
-                                                <TouchableOpacity
-                                                    key={dia}
-                                                    className='items-center'
-                                                    onPress={() => {
-                                                        if (!isOcupado) {
-                                                            handleReservarDia(lab.name, dia);
-                                                        } else {
-                                                            Alert.alert(
-                                                                'Dia Ocupado',
-                                                                `Este dia já está reservado por ${reservaInfo?.professor}`
-                                                            );
-                                                        }
-                                                    }}
-                                                    activeOpacity={0.7}
-                                                >
-                                                    <View
-                                                        className={`w-12 h-12 rounded-full justify-center items-center ${
-                                                            isOcupado ? 'bg-red-500' : 'bg-gray-300'
-                                                        }`}
+                                                <View key={dia} className='items-center'>
+                                                    <TouchableOpacity
+                                                        className='items-center'
+                                                        onPress={() => {
+                                                            if (!isOcupado) {
+                                                                handleReservarDia(lab.name, dia);
+                                                            } else {
+                                                                Alert.alert(
+                                                                    'Dia Ocupado',
+                                                                    `Este dia já está reservado por ${reservaInfo?.professor}`
+                                                                );
+                                                            }
+                                                        }}
+                                                        activeOpacity={0.7}
                                                     >
-                                                        <Text className='text-white font-bold text-base'>
-                                                            {dia}
-                                                        </Text>
-                                                    </View>
+                                                        <View
+                                                            className={`w-12 h-12 rounded-full justify-center items-center ${
+                                                                isOcupado ? 'bg-red-500' : 'bg-gray-300'
+                                                            }`}
+                                                        >
+                                                            <Text className='text-white font-bold text-base'>
+                                                                {dia}
+                                                            </Text>
+                                                        </View>
+                                                    </TouchableOpacity>
                                                     {isOcupado && (
                                                         <View className='mt-1 bg-white px-2 py-0.5 rounded'>
                                                             <Text className='text-green-700 text-xs font-semibold'>
@@ -208,7 +209,7 @@ export default function Dashboard() {
                                                             </Text>
                                                         </View>
                                                     )}
-                                                </TouchableOpacity>
+                                                </View>
                                             );
                                         })}
                                     </View>

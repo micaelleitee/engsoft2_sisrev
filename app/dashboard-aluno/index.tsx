@@ -152,7 +152,7 @@ export default function Dashboard() {
                                     {hasReservas ? (
                                         <>
                                             {/* Calendário da semana */}
-                                            <View className='flex-row justify-around items-center mb-4 mt-2'>
+                                            <View className='flex-row justify-around items-start mb-4 mt-2'>
                                                 {diasSemana.map((dia) => {
                                                     const isReservado = isDiaReservado(disciplina.reservas, dia);
                                                     return (
