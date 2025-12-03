@@ -1,4 +1,5 @@
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -41,6 +42,7 @@ const LABORATORIES = [
 ];
 
 export default function Dashboard() {
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedLaboratory, setExpandedLaboratory] = useState<number | null>(null);
 
@@ -66,26 +68,12 @@ export default function Dashboard() {
         return reservas.find(r => r.dia === dia);
     };
 
-    // Função para fazer a reserva
-    const handleReservarDia = (labName: string, dia: number) => {
-        Alert.alert(
-            'Confirmar Reserva',
-            `Deseja reservar o ${labName} para o dia ${dia}?`,
-            [
-                {
-                    text: 'Cancelar',
-                    style: 'cancel'
-                },
-                {
-                    text: 'Confirmar',
-                    onPress: () => {
-                        // Aqui você adicionaria a lógica para salvar a reserva
-                        Alert.alert('Sucesso', `${labName} reservado para o dia ${dia}!`);
-                        setExpandedLaboratory(null);
-                    }
-                }
-            ]
-        );
+    // Função para abrir calendário de reserva
+    const handleReservarDia = (labName: string, labId: number) => {
+        router.push({
+            pathname: '/dashboard-professor/reservar-laboratorio',
+            params: { laboratorio: labName, labId: labId.toString() }
+        });
     };
 
     return (
@@ -182,7 +170,7 @@ export default function Dashboard() {
                                                         className='items-center'
                                                         onPress={() => {
                                                             if (!isOcupado) {
-                                                                handleReservarDia(lab.name, dia);
+                                                                handleReservarDia(lab.name, lab.id);
                                                             } else {
                                                                 Alert.alert(
                                                                     'Dia Ocupado',
@@ -218,6 +206,7 @@ export default function Dashboard() {
                                     <TouchableOpacity
                                         className='bg-white rounded-full py-2 items-center'
                                         activeOpacity={0.8}
+                                        onPress={() => handleReservarDia(lab.name, lab.id)}
                                     >
                                         <Text className='text-green-700 font-semibold'>
                                             Ver mais

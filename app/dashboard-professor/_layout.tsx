@@ -36,6 +36,7 @@ function DashboardProfessorLayout() {
                     }}
                 >
                     <Stack.Screen name="index" />
+                    <Stack.Screen name="reservar-laboratorio" />
                     <Stack.Screen name="reservations/reservations" />
                     <Stack.Screen name="profile/profile" />
                 </Stack>
