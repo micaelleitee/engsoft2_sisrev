@@ -45,7 +45,7 @@ export default function ConfirmarReserva() {
             [
                 {
                     text: 'OK',
-                    onPress: () => router.back(),
+                    onPress: () => router.push('/dashboard-professor/reservations/reservations'),
                 },
             ]
         );

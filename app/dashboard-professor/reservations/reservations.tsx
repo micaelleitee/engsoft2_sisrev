@@ -48,20 +48,90 @@ export default function Reservations() {
             </View>
             
             {/* Conteúdo Principal - Lista de Reservas */}
-            <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 20 }}>
-                <Text className='text-xl font-bold text-green-700 mb-4'>
-                    Minhas Reservas
+            <ScrollView className='flex-1 px-4 py-2' contentContainerStyle={{ paddingBottom: 100 }}>
+                <Text className='text-xl font-bold text-gray-800 mb-4'>
+                    Minhas reservas:
                 </Text>
-                
-                {/* Placeholder para reservas */}
-                <View className='bg-gray-100 rounded-lg p-8 items-center'>
-                    <MaterialIcons name="event" size={64} color="#9CA3AF" />
-                    <Text className='text-gray-500 text-lg font-semibold mt-4'>
-                        Nenhuma reserva encontrada
+
+                {/* Card de Reserva 1 - Confirmada */}
+                <View className='bg-gray-200 rounded-2xl p-4 mb-4'>
+                    {/* Nome do Laboratório */}
+                    <View className='flex-row items-center mb-2'>
+                        <Ionicons name="flask" size={20} color="#15803d" />
+                        <Text className='text-green-700 font-bold text-base ml-2'>
+                            Laboratório 02
+                        </Text>
+                    </View>
+
+                    {/* Data e Horário */}
+                    <Text className='text-gray-800 text-sm mb-3'>
+                        Data: 18/07/2025 - Horário 20:20 - 22:00
                     </Text>
-                    <Text className='text-gray-400 text-center mt-2'>
-                        Faça sua primeira reserva de laboratório
+
+                    {/* Botões de Status */}
+                    <View className='flex-row space-x-2'>
+                        <View className='bg-green-600 rounded-lg px-4 py-2'>
+                            <Text className='text-white font-semibold text-xs'>Confirmada</Text>
+                        </View>
+                        <View className='bg-gray-400 rounded-lg px-4 py-2'>
+                            <Text className='text-white font-semibold text-xs'>Andamento</Text>
+                        </View>
+                        <View className='bg-gray-300 rounded-lg px-4 py-2'>
+                            <Text className='text-gray-600 font-semibold text-xs'>Concluída</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Card de Reserva 2 - Confirmada */}
+                <View className='bg-gray-200 rounded-2xl p-4 mb-4'>
+                    <View className='flex-row items-center mb-2'>
+                        <Ionicons name="flask" size={20} color="#15803d" />
+                        <Text className='text-green-700 font-bold text-base ml-2'>
+                            Laboratório 01
+                        </Text>
+                    </View>
+
+                    <Text className='text-gray-800 text-sm mb-3'>
+                        Data: 19/07/2025 - Horário 18:30 - 20:00
                     </Text>
+
+                    <View className='flex-row space-x-2'>
+                        <View className='bg-green-600 rounded-lg px-4 py-2'>
+                            <Text className='text-white font-semibold text-xs'>Confirmada</Text>
+                        </View>
+                        <View className='bg-gray-400 rounded-lg px-4 py-2'>
+                            <Text className='text-white font-semibold text-xs'>Andamento</Text>
+                        </View>
+                        <View className='bg-gray-300 rounded-lg px-4 py-2'>
+                            <Text className='text-gray-600 font-semibold text-xs'>Concluída</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Card de Reserva 3 - Confirmada */}
+                <View className='bg-gray-200 rounded-2xl p-4 mb-4'>
+                    <View className='flex-row items-center mb-2'>
+                        <Ionicons name="flask" size={20} color="#15803d" />
+                        <Text className='text-green-700 font-bold text-base ml-2'>
+                            Laboratório 03
+                        </Text>
+                    </View>
+
+                    <Text className='text-gray-800 text-sm mb-3'>
+                        Data: 20/07/2025 - Horário 18:30 - 20:00
+                    </Text>
+
+                    <View className='flex-row space-x-2'>
+                        <View className='bg-green-600 rounded-lg px-4 py-2'>
+                            <Text className='text-white font-semibold text-xs'>Confirmada</Text>
+                        </View>
+                        <View className='bg-gray-400 rounded-lg px-4 py-2'>
+                            <Text className='text-white font-semibold text-xs'>Andamento</Text>
+                        </View>
+                        <View className='bg-gray-300 rounded-lg px-4 py-2'>
+                            <Text className='text-gray-600 font-semibold text-xs'>Concluída</Text>
+                        </View>
+                    </View>
                 </View>
             </ScrollView>
         </View>
