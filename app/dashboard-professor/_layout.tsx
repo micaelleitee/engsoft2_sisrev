@@ -28,7 +28,7 @@ function DashboardProfessorLayout() {
     return (
         <View style={{ flex: 1, backgroundColor: '#E5E7EB' }}>
             {/* Card fixo que envolve todo o conteúdo */}
-            <View style={{ flex: 1, margin: 8, backgroundColor: 'white', borderRadius: 8, overflow: 'hidden' }}>
+            <View style={{ flex: 1, margin: 0, backgroundColor: 'white', borderRadius: 8, overflow: 'hidden' }}>
                 <Stack
                     screenOptions={{
                         headerShown: false,
