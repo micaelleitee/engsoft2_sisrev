@@ -66,26 +66,16 @@ export default function ReservarLaboratorio() {
             return;
         }
 
-        const data = new Date(selectedDate);
-        const dataFormatada = `${data.getDate()}/${data.getMonth() + 1}/${data.getFullYear()}`;
+        const data = new Date(selectedDate + 'T00:00:00');
+        const dataFormatada = `${String(data.getDate()).padStart(2, '0')}/${String(data.getMonth() + 1).padStart(2, '0')}/${data.getFullYear()}`;
 
-        Alert.alert(
-            'Confirmar Reserva',
-            `Deseja confirmar a reserva do ${laboratorio} para o dia ${dataFormatada}?`,
-            [
-                {
-                    text: 'Cancelar',
-                    style: 'cancel'
-                },
-                {
-                    text: 'Confirmar',
-                    onPress: () => {
-                        Alert.alert('Sucesso', 'Reserva confirmada!');
-                        router.back();
-                    }
-                }
-            ]
-        );
+        router.push({
+            pathname: '/dashboard-professor/confirmar-reserva',
+            params: {
+                laboratorio: laboratorio,
+                data: dataFormatada
+            }
+        });
     };
 
     return (
