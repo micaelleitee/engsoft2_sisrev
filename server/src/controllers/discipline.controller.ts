@@ -7,11 +7,18 @@ export const getAllDisciplines = async (req: Request, res: Response) => {
   try {
     const disciplines = await prisma.discipline.findMany({
       orderBy: { name: 'asc' },
-      select: {
-        id: true,
-        name: true,
-        code: true,
-        description: true,
+      include: {
+        reservations: {
+          include: {
+            laboratory: true,
+            professor: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
       }
     });
 

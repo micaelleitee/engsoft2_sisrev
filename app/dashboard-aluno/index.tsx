@@ -48,44 +48,38 @@ export default function Dashboard() {
         try {
             setLoading(true);
             
-            // Buscar todas as disciplinas e todas as reservas em paralelo
-            const [disciplinesData, reservationsData] = await Promise.all([
-                ApiService.getDisciplines(),
-                ApiService.getReservations()
-            ]);
+            // A API agora retorna as disciplinas com suas reservas confirmadas aninhadas
+            const disciplinesData = await ApiService.getDisciplines();
             
-            // Agrupar reservas por disciplina
-            const disciplinesWithReservations: Discipline[] = disciplinesData.map((discipline: any) => {
-                const disciplineReservations = reservationsData
-                    .filter((reservation: Reservation) => 
-                        reservation.discipline?.id === discipline.id && 
-                        reservation.status === 'CONFIRMED'
-                    )
-                    .map((reservation: Reservation) => {
-                        const startDate = new Date(reservation.startDate);
-                        const endDate = new Date(reservation.endDate);
-                        
-                        const dia = startDate.getDate();
-                        const data = `${String(dia).padStart(2, '0')}/${String(startDate.getMonth() + 1).padStart(2, '0')}/${startDate.getFullYear()}`;
-                        const horario = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')} - ${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
-                        
-                        return {
-                            ...reservation,
-                            dia,
-                            data,
-                            horario,
-                            laboratorio: reservation.laboratory.name
-                        };
-                    });
+            // Processa as reservas aninhadas para formatar os dados
+            const disciplinesWithFormattedReservations: Discipline[] = disciplinesData.map((discipline: any) => {
+                const activeReservations = discipline.reservations.filter((res: any) => res.status !== 'CANCELLED');
+                
+                const formattedReservations = activeReservations.map((reservation: any) => {
+                    const startDate = new Date(reservation.startDate);
+                    const endDate = new Date(reservation.endDate);
+                    
+                    const dia = startDate.getDate();
+                    const data = `${String(dia).padStart(2, '0')}/${String(startDate.getMonth() + 1).padStart(2, '0')}/${startDate.getFullYear()}`;
+                    const horario = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')} - ${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+                    
+                    return {
+                        ...reservation,
+                        dia,
+                        data,
+                        horario,
+                        laboratorio: reservation.laboratory.name
+                    };
+                });
                 
                 return {
                     id: discipline.id,
                     name: discipline.name,
-                    reservas: disciplineReservations
+                    reservas: formattedReservations
                 };
             });
             
-            setAllDisciplines(disciplinesWithReservations);
+            setAllDisciplines(disciplinesWithFormattedReservations);
         } catch (error) {
             console.error('Erro ao carregar dados:', error);
             Alert.alert('Erro', 'Não foi possível carregar os dados. Tente novamente.');
