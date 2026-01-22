@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getAllLaboratories = async (req: Request, res: Response) => {
+export const getAllLaboratories = async (_req: Request, res: Response) => {
   const laboratories = await prisma.laboratory.findMany({
     where: { isActive: true },
     include: {
@@ -33,7 +33,7 @@ export const getAllLaboratories = async (req: Request, res: Response) => {
     orderBy: { name: 'asc' }
   });
 
-  res.json(laboratories);
+  return res.json(laboratories);
 };
 
 export const getLaboratoryById = async (req: Request, res: Response) => {
@@ -72,6 +72,6 @@ export const getLaboratoryById = async (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Laboratório não encontrado' });
   }
 
-  res.json(laboratory);
+  return res.json(laboratory);
 };
 
