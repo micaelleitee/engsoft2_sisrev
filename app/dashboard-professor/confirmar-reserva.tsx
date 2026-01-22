@@ -228,7 +228,7 @@ export default function ConfirmarReserva() {
                         <View className='border-2 border-gray-300 border-t-0 rounded-b-xl overflow-hidden bg-white'>
                             {disciplinas.map((disciplina, index) => (
                                 <TouchableOpacity
-                                    key={disciplina.id}
+                                    key={disciplina.id || `disciplina-${index}-${disciplina.name}`}
                                     onPress={() => {
                                         setDisciplinaSelecionada(disciplina.name);
                                         // disciplineId é opcional, então não vamos definir
