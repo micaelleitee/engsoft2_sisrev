@@ -25,7 +25,7 @@ export const getAllDisciplines = async (_req: Request, res: Response) => {
     return res.json(disciplines);
   } catch (error) {
     console.error('[Discipline] Erro ao buscar disciplinas:', error);
-    res.status(500).json({ error: 'Erro ao buscar disciplinas' });
+    return res.status(500).json({ error: 'Erro ao buscar disciplinas' });
   }
 };
 
@@ -45,7 +45,7 @@ export const getDisciplineById = async (req: Request, res: Response) => {
     return res.json(discipline);
   } catch (error) {
     console.error('[Discipline] Erro ao buscar disciplina:', error);
-    res.status(500).json({ error: 'Erro ao buscar disciplina' });
+    return res.status(500).json({ error: 'Erro ao buscar disciplina' });
   }
 };
 
