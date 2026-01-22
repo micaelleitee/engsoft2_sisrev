@@ -20,110 +20,136 @@ const registerSchema = z.object({
 });
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = loginSchema.parse(req.body);
+  try {
+    const { email, password } = loginSchema.parse(req.body);
 
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase().trim() }
-  });
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() }
+    });
 
-  if (!user) {
-    throw new AppError('Email ou senha inválidos', 401);
-  }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordValid) {
-    throw new AppError('Email ou senha inválidos', 401);
-  }
-
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error('JWT_SECRET não configurado');
-  }
-
-  const token = jwt.sign(
-    { userId: user.id, role: user.role },
-    secret,
-    { expiresIn: '7d' }
-  );
-
-  res.json({
-    token,
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role
+    if (!user) {
+      throw new AppError('Email ou senha inválidos', 401);
     }
-  });
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new AppError('Email ou senha inválidos', 401);
+    }
+
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET não configurado');
+    }
+
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      secret,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const register = async (req: Request, res: Response) => {
-  const data = registerSchema.parse(req.body);
+  try {
+    const data = registerSchema.parse(req.body);
+    console.log('[Register] Dados recebidos:', { email: data.email, name: data.name, role: data.role });
 
-  // Validação de email baseado no tipo de usuário
-  const emailLower = data.email.toLowerCase().trim();
-  let userRole = data.role;
+    // Validação de email baseado no tipo de usuário
+    const emailLower = data.email.toLowerCase().trim();
+    let userRole = data.role;
+    console.log('[Register] Email processado:', emailLower, 'Role fornecido:', userRole);
 
-  if (!userRole) {
-    if (emailLower.endsWith('@aluno.ifce.edu.br')) {
-      userRole = 'ALUNO';
-    } else if (emailLower.endsWith('@ifce.edu.br')) {
-      userRole = 'PROFESSOR';
+    if (!userRole) {
+      // Verificar primeiro o mais específico (@aluno.ifce.edu.br)
+      if (emailLower.endsWith('@aluno.ifce.edu.br')) {
+        userRole = 'ALUNO';
+        console.log('[Register] Role determinado automaticamente: ALUNO');
+      } else if (emailLower.endsWith('@ifce.edu.br') && !emailLower.endsWith('@aluno.ifce.edu.br')) {
+        userRole = 'PROFESSOR';
+        console.log('[Register] Role determinado automaticamente: PROFESSOR');
+      } else {
+        console.log('[Register] Email inválido:', emailLower);
+        throw new AppError('Email deve terminar com @aluno.ifce.edu.br ou @ifce.edu.br', 400);
+      }
     } else {
-      throw new AppError('Email deve terminar com @aluno.ifce.edu.br ou @ifce.edu.br', 400);
+      // Validação adicional se o role foi fornecido
+      if (userRole === 'ALUNO') {
+        if (!emailLower.endsWith('@aluno.ifce.edu.br')) {
+          console.log('[Register] Email de aluno inválido:', emailLower);
+          throw new AppError('Email de aluno deve terminar com @aluno.ifce.edu.br', 400);
+        }
+        console.log('[Register] Validação de aluno passou');
+      } else if (userRole === 'PROFESSOR') {
+        // Para professor, deve terminar com @ifce.edu.br mas NÃO com @aluno.ifce.edu.br
+        if (!emailLower.endsWith('@ifce.edu.br') || emailLower.endsWith('@aluno.ifce.edu.br')) {
+          console.log('[Register] Email de professor inválido:', emailLower);
+          throw new AppError('Email de professor deve terminar com @ifce.edu.br (e não @aluno.ifce.edu.br)', 400);
+        }
+        console.log('[Register] Validação de professor passou');
+      }
     }
-  } else {
-    // Validação adicional se o role foi fornecido
-    if (userRole === 'ALUNO' && !emailLower.endsWith('@aluno.ifce.edu.br')) {
-      throw new AppError('Email de aluno deve terminar com @aluno.ifce.edu.br', 400);
+
+    // Verifica se o usuário já existe
+    const existingUser = await prisma.user.findUnique({
+      where: { email: emailLower }
+    });
+
+    if (existingUser) {
+      console.log('[Register] Email já cadastrado:', emailLower);
+      throw new AppError('Email já cadastrado', 409);
     }
-    if (userRole === 'PROFESSOR' && !emailLower.endsWith('@ifce.edu.br')) {
-      throw new AppError('Email de professor deve terminar com @ifce.edu.br', 400);
+
+    console.log('[Register] Criando usuário com role:', userRole);
+    // Hash da senha
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    // Cria o usuário
+    const user = await prisma.user.create({
+      data: {
+        email: emailLower,
+        password: hashedPassword,
+        name: data.name,
+        role: userRole as 'ALUNO' | 'PROFESSOR'
+      }
+    });
+    
+    console.log('[Register] Usuário criado com sucesso:', { id: user.id, email: user.email, role: user.role });
+
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET não configurado');
     }
+
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      secret,
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    throw error;
   }
-
-  // Verifica se o usuário já existe
-  const existingUser = await prisma.user.findUnique({
-    where: { email: emailLower }
-  });
-
-  if (existingUser) {
-    throw new AppError('Email já cadastrado', 409);
-  }
-
-  // Hash da senha
-  const hashedPassword = await bcrypt.hash(data.password, 10);
-
-  // Cria o usuário
-  const user = await prisma.user.create({
-    data: {
-      email: emailLower,
-      password: hashedPassword,
-      name: data.name,
-      role: userRole as 'ALUNO' | 'PROFESSOR'
-    }
-  });
-
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error('JWT_SECRET não configurado');
-  }
-
-  const token = jwt.sign(
-    { userId: user.id, role: user.role },
-    secret,
-    { expiresIn: '7d' }
-  );
-
-  res.status(201).json({
-    token,
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role
-    }
-  });
 };
 

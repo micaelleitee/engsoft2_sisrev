@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { ZodError } from 'zod';
 
 export class AppError extends Error {
   statusCode: number;
@@ -18,6 +19,16 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  // Tratamento de erros do Zod
+  if (err instanceof ZodError) {
+    const firstError = err.errors[0];
+    return res.status(400).json({
+      error: firstError?.message || 'Dados inválidos',
+      statusCode: 400,
+      details: process.env.NODE_ENV === 'development' ? err.errors : undefined
+    });
+  }
+
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       error: err.message,

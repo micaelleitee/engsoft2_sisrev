@@ -9,35 +9,54 @@ const prisma = new PrismaClient();
 const createReservationSchema = z.object({
   laboratoryId: z.string().uuid('ID do laboratório inválido'),
   disciplineId: z.string().uuid('ID da disciplina inválido').optional(),
-  startDate: z.string().datetime('Data de início inválida'),
-  endDate: z.string().datetime('Data de fim inválida'),
+  startDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: 'Data de início inválida'
+  }),
+  endDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: 'Data de fim inválida'
+  }),
   description: z.string().optional()
 });
 
 export const createReservation = async (req: AuthRequest, res: Response) => {
-  const data = createReservationSchema.parse(req.body);
-  const professorId = req.userId!;
+  try {
+    console.log('[Reservation] Dados recebidos:', req.body);
+    const data = createReservationSchema.parse(req.body);
+    const professorId = req.userId!;
+    console.log('[Reservation] Dados validados:', data, 'Professor ID:', professorId);
 
-  const startDate = new Date(data.startDate);
-  const endDate = new Date(data.endDate);
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(data.endDate);
+    
+    console.log('[Reservation] Datas processadas:', { startDate, endDate });
 
-  // Validações
-  if (startDate >= endDate) {
-    throw new AppError('Data de início deve ser anterior à data de fim', 400);
-  }
+    // Validações
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      console.log('[Reservation] Datas inválidas');
+      throw new AppError('Formato de data inválido', 400);
+    }
 
-  if (startDate < new Date()) {
-    throw new AppError('Não é possível reservar para datas passadas', 400);
-  }
+    if (startDate >= endDate) {
+      console.log('[Reservation] Data de início >= data de fim');
+      throw new AppError('Data de início deve ser anterior à data de fim', 400);
+    }
 
-  // Verifica se o laboratório existe
-  const laboratory = await prisma.laboratory.findUnique({
-    where: { id: data.laboratoryId }
-  });
+    if (startDate < new Date()) {
+      console.log('[Reservation] Tentativa de reservar para data passada');
+      throw new AppError('Não é possível reservar para datas passadas', 400);
+    }
 
-  if (!laboratory || !laboratory.isActive) {
-    throw new AppError('Laboratório não encontrado ou inativo', 404);
-  }
+    // Verifica se o laboratório existe
+    const laboratory = await prisma.laboratory.findUnique({
+      where: { id: data.laboratoryId }
+    });
+
+    if (!laboratory || !laboratory.isActive) {
+      console.log('[Reservation] Laboratório não encontrado ou inativo:', data.laboratoryId);
+      throw new AppError('Laboratório não encontrado ou inativo', 404);
+    }
+    
+    console.log('[Reservation] Laboratório encontrado:', laboratory.name);
 
   // Verifica conflitos de horário
   const conflictingReservation = await prisma.reservation.findFirst({
@@ -69,12 +88,14 @@ export const createReservation = async (req: AuthRequest, res: Response) => {
     }
   });
 
-  if (conflictingReservation) {
-    throw new AppError('Já existe uma reserva neste horário', 409);
-  }
+    if (conflictingReservation) {
+      console.log('[Reservation] Conflito de horário detectado');
+      throw new AppError('Já existe uma reserva neste horário', 409);
+    }
 
-  // Cria a reserva
-  const reservation = await prisma.reservation.create({
+    console.log('[Reservation] Criando reserva...');
+    // Cria a reserva
+    const reservation = await prisma.reservation.create({
     data: {
       laboratoryId: data.laboratoryId,
       professorId,
@@ -101,8 +122,13 @@ export const createReservation = async (req: AuthRequest, res: Response) => {
       }
     }
   });
-
-  res.status(201).json(reservation);
+    
+    console.log('[Reservation] Reserva criada com sucesso:', reservation.id);
+    res.status(201).json(reservation);
+  } catch (error) {
+    console.error('[Reservation] Erro ao criar reserva:', error);
+    throw error;
+  }
 };
 
 export const getReservations = async (req: AuthRequest, res: Response) => {

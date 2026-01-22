@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('ALUNO', 'PROFESSOR', 'ADMIN');
+CREATE TYPE "UserRole" AS ENUM ('ALUNO', 'PROFESSOR');
 
 -- CreateEnum
 CREATE TYPE "ReservationStatus" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED');

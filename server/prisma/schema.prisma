@@ -13,7 +13,6 @@ datasource db {
 enum UserRole {
   ALUNO
   PROFESSOR
-  ADMIN
 }
 
 enum ReservationStatus {
