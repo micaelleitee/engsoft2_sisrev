@@ -1,52 +1,57 @@
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { ApiService } from '../../src/services/api';
 
-// Mock de laboratórios com disponibilidade - posteriormente virá do banco de dados
-const LABORATORIES = [
-    {
-        id: 1,
-        name: 'Laboratório 01',
-        reservas: [
-            { dia: 19, ocupado: true, professor: 'Prof. João Silva' },
-            { dia: 21, ocupado: true, professor: 'Prof. Maria Santos' },
-        ]
-    },
-    {
-        id: 2,
-        name: 'Laboratório 02',
-        reservas: [
-            { dia: 18, ocupado: true, professor: 'Prof. Carlos Souza' },
-        ]
-    },
-    {
-        id: 3,
-        name: 'Laboratório 03',
-        reservas: [
-            { dia: 22, ocupado: true, professor: 'Prof. Ana Costa' },
-        ]
-    },
-    {
-        id: 4,
-        name: 'Laboratório 04',
-        reservas: [
-            { dia: 18, ocupado: true, professor: 'Prof. Pedro Lima' },
-        ]
-    },
-    {
-        id: 5,
-        name: 'Laboratório 05',
-        reservas: []
-    },
-];
+interface Laboratory {
+    id: string;
+    name: string;
+    description?: string;
+    capacity?: number;
+    reservations?: Array<{
+        id: string;
+        startDate: string;
+        endDate: string;
+        professor: {
+            name: string;
+        };
+    }>;
+}
 
 export default function Dashboard() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
-    const [expandedLaboratory, setExpandedLaboratory] = useState<number | null>(null);
+    const [expandedLaboratory, setExpandedLaboratory] = useState<string | null>(null);
+    const [laboratories, setLaboratories] = useState<Laboratory[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const handleLaboratoryPress = (labId: number) => {
+    useEffect(() => {
+        loadLaboratories();
+    }, []);
+
+    // Recarrega os dados quando a tela recebe foco (útil após criar uma reserva)
+    useFocusEffect(
+        useCallback(() => {
+            loadLaboratories();
+        }, [])
+    );
+
+    const loadLaboratories = async () => {
+        try {
+            setLoading(true);
+            const labs = await ApiService.getLaboratories();
+            console.log('[Dashboard] Laboratórios carregados:', labs);
+            setLaboratories(labs);
+        } catch (error) {
+            console.error('[Dashboard] Erro ao carregar laboratórios:', error);
+            Alert.alert('Erro', 'Não foi possível carregar os laboratórios. Tente novamente.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLaboratoryPress = (labId: string) => {
         // Toggle do accordion
         if (expandedLaboratory === labId) {
             setExpandedLaboratory(null);
@@ -55,26 +60,96 @@ export default function Dashboard() {
         }
     };
 
-    // Dias da semana para o calendário
-    const diasSemana = [18, 19, 20, 21, 22];
+    // Gera os dias da semana atual (segunda a sexta)
+    const getDiasSemana = () => {
+        const hoje = new Date();
+        const diaSemana = hoje.getDay(); // 0 = domingo, 1 = segunda, etc.
+        
+        // Calcula a segunda-feira da semana atual
+        const diff = diaSemana === 0 ? -6 : 1 - diaSemana; // Se domingo, volta 6 dias; senão, calcula para segunda
+        const segunda = new Date(hoje);
+        segunda.setDate(hoje.getDate() + diff);
+        segunda.setHours(0, 0, 0, 0);
+        
+        // Gera os 5 dias úteis (segunda a sexta)
+        const dias: Array<{ date: Date; dayNumber: number; dateString: string }> = [];
+        for (let i = 0; i < 5; i++) {
+            const dia = new Date(segunda);
+            dia.setDate(segunda.getDate() + i);
+            dias.push({
+                date: dia,
+                dayNumber: dia.getDate(),
+                dateString: dia.toISOString().split('T')[0] // YYYY-MM-DD
+            });
+        }
+        return dias;
+    };
+
+    const diasSemana = getDiasSemana();
+
+    // Formata data para YYYY-MM-DD
+    const formatDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
     // Verifica se um dia está ocupado para um laboratório
-    const isDiaOcupado = (reservas: any[], dia: number) => {
-        return reservas.some(r => r.dia === dia && r.ocupado);
+    const isDiaOcupado = (reservations: Laboratory['reservations'], dateString: string) => {
+        if (!reservations) return false;
+        
+        const checkDate = new Date(dateString + 'T00:00:00');
+        const checkDateStr = formatDate(checkDate);
+
+        return reservations.some(r => {
+            if (r.status === 'CANCELLED' || r.status === 'COMPLETED') {
+                return false;
+            }
+            
+            const startDate = new Date(r.startDate);
+            const endDate = new Date(r.endDate);
+            const startDateStr = formatDate(startDate);
+            const endDateStr = formatDate(endDate);
+
+            // Verifica se a data está entre o início e fim da reserva
+            return checkDateStr >= startDateStr && checkDateStr <= endDateStr;
+        });
     };
 
     // Pega informações da reserva de um dia específico
-    const getReservaInfo = (reservas: any[], dia: number) => {
-        return reservas.find(r => r.dia === dia);
+    const getReservaInfo = (reservations: Laboratory['reservations'], dateString: string) => {
+        if (!reservations) return null;
+        
+        const checkDate = new Date(dateString + 'T00:00:00');
+        const checkDateStr = formatDate(checkDate);
+
+        return reservations.find(r => {
+            if (r.status === 'CANCELLED' || r.status === 'COMPLETED') {
+                return false;
+            }
+            
+            const startDate = new Date(r.startDate);
+            const endDate = new Date(r.endDate);
+            const startDateStr = formatDate(startDate);
+            const endDateStr = formatDate(endDate);
+
+            return checkDateStr >= startDateStr && checkDateStr <= endDateStr;
+        });
     };
 
     // Função para abrir calendário de reserva
-    const handleReservarDia = (labName: string, labId: number) => {
+    const handleReservarDia = (labName: string, labId: string) => {
         router.push({
             pathname: '/dashboard-professor/reservar-laboratorio',
-            params: { laboratorio: labName, labId: labId.toString() }
+            params: { laboratorio: labName, labId: labId }
         });
     };
+
+    // Filtrar laboratórios baseado na busca
+    const filteredLaboratories = laboratories.filter(lab =>
+        lab.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <View className='flex-1'>
@@ -124,8 +199,19 @@ export default function Dashboard() {
                     Laboratórios
                 </Text>
 
-                {LABORATORIES.map((lab) => {
-                    const isExpanded = expandedLaboratory === lab.id;
+                {loading ? (
+                    <View className='flex-1 justify-center items-center py-20'>
+                        <ActivityIndicator size="large" color="#15803d" />
+                        <Text className='text-gray-600 mt-4'>Carregando laboratórios...</Text>
+                    </View>
+                ) : filteredLaboratories.length === 0 ? (
+                    <View className='flex-1 justify-center items-center py-20'>
+                        <Text className='text-gray-600'>Nenhum laboratório encontrado</Text>
+                    </View>
+                ) : (
+                    filteredLaboratories.map((lab) => {
+                        const isExpanded = expandedLaboratory === lab.id;
+                        const reservations = lab.reservations || [];
 
                     return (
                         <View key={lab.id} className='mb-3'>
@@ -160,12 +246,16 @@ export default function Dashboard() {
                                 <View className='bg-green-600 rounded-b-3xl px-4 pb-4'>
                                     {/* Calendário da semana */}
                                     <View className='flex-row justify-around items-start mb-4 mt-2'>
-                                        {diasSemana.map((dia) => {
-                                            const isOcupado = isDiaOcupado(lab.reservas, dia);
-                                            const reservaInfo = getReservaInfo(lab.reservas, dia);
+                                        {diasSemana.map((diaInfo) => {
+                                            const isOcupado = isDiaOcupado(reservations, diaInfo.dateString);
+                                            const reservaInfo = getReservaInfo(reservations, diaInfo.dateString);
+
+                                            // Nome do dia da semana
+                                            const nomesDias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                                            const nomeDia = nomesDias[diaInfo.date.getDay()];
 
                                             return (
-                                                <View key={dia} className='items-center'>
+                                                <View key={diaInfo.dateString} className='items-center'>
                                                     <TouchableOpacity
                                                         className='items-center'
                                                         onPress={() => {
@@ -174,19 +264,22 @@ export default function Dashboard() {
                                                             } else {
                                                                 Alert.alert(
                                                                     'Dia Ocupado',
-                                                                    `Este dia já está reservado por ${reservaInfo?.professor}`
+                                                                    `Este dia já está reservado por ${reservaInfo?.professor?.name || 'outro professor'}`
                                                                 );
                                                             }
                                                         }}
                                                         activeOpacity={0.7}
                                                     >
+                                                        <Text className='text-white text-xs mb-1 font-semibold'>
+                                                            {nomeDia}
+                                                        </Text>
                                                         <View
                                                             className={`w-12 h-12 rounded-full justify-center items-center ${
                                                                 isOcupado ? 'bg-red-500' : 'bg-gray-300'
                                                             }`}
                                                         >
                                                             <Text className='text-white font-bold text-base'>
-                                                                {dia}
+                                                                {diaInfo.dayNumber}
                                                             </Text>
                                                         </View>
                                                     </TouchableOpacity>
@@ -216,7 +309,8 @@ export default function Dashboard() {
                             )}
                         </View>
                     );
-                })}
+                    })
+                )}
             </ScrollView>
         </View>
     );

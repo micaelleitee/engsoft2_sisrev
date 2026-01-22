@@ -46,11 +46,11 @@ export default function SignUp() {
 
         const emailLower = email.toLowerCase().trim();
         
-        // Determina o role baseado no email
+        // Determina o role baseado no email (verificar primeiro o mais específico)
         let role: 'ALUNO' | 'PROFESSOR' | undefined;
         if (emailLower.endsWith('@aluno.ifce.edu.br')) {
             role = 'ALUNO';
-        } else if (emailLower.endsWith('@ifce.edu.br')) {
+        } else if (emailLower.endsWith('@ifce.edu.br') && !emailLower.endsWith('@aluno.ifce.edu.br')) {
             role = 'PROFESSOR';
         } else {
             Alert.alert('Erro', 'Email deve terminar com @aluno.ifce.edu.br ou @ifce.edu.br');

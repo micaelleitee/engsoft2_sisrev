@@ -6,7 +6,7 @@ interface User {
   id: string;
   email: string;
   name: string;
-  role: 'ALUNO' | 'PROFESSOR' | 'ADMIN';
+  role: 'ALUNO' | 'PROFESSOR';
 }
 
 interface AuthContextType {
@@ -54,7 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
+      console.log('[AuthContext] Attempting to login:', { email });
       const response = await ApiService.login(email, password);
+      console.log('[AuthContext] Login successful');
       
       await Promise.all([
         AsyncStorage.setItem(TOKEN_KEY, response.token),
@@ -64,7 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(response.token);
       setUser(response.user);
     } catch (error: any) {
-      throw new Error(error.error || 'Erro ao fazer login');
+      console.error('[AuthContext] Login error:', error);
+      const errorMessage = error?.error || error?.message || 'Erro ao fazer login. Verifique suas credenciais e tente novamente.';
+      throw new Error(errorMessage);
     }
   };
 
@@ -75,7 +79,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     role?: 'ALUNO' | 'PROFESSOR'
   ) => {
     try {
+      console.log('[AuthContext] Attempting to register user:', { email, name, role });
       const response = await ApiService.register({ email, password, name, role });
+      console.log('[AuthContext] Registration successful:', response);
       
       await Promise.all([
         AsyncStorage.setItem(TOKEN_KEY, response.token),
@@ -85,7 +91,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(response.token);
       setUser(response.user);
     } catch (error: any) {
-      throw new Error(error.error || 'Erro ao registrar');
+      console.error('[AuthContext] Registration error:', error);
+      const errorMessage = error?.error || error?.message || 'Erro ao registrar. Verifique sua conexão e tente novamente.';
+      throw new Error(errorMessage);
     }
   };
 

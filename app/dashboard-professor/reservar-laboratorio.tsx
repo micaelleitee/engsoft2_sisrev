@@ -1,8 +1,9 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Alert, ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { ApiService } from '../../src/services/api';
 
 // Configuração do calendário em português
 LocaleConfig.locales['pt-br'] = {
@@ -17,43 +18,182 @@ LocaleConfig.locales['pt-br'] = {
 };
 LocaleConfig.defaultLocale = 'pt-br';
 
+interface Reservation {
+    id: string;
+    startDate: string;
+    endDate: string;
+    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+    professor: {
+        id: string;
+        name: string;
+    };
+}
+
+interface Laboratory {
+    id: string;
+    name: string;
+    reservations: Reservation[];
+}
+
 export default function ReservarLaboratorio() {
     const router = useRouter();
     const params = useLocalSearchParams<{ laboratorio: string; labId: string }>();
     const laboratorio = Array.isArray(params.laboratorio) ? params.laboratorio[0] : params.laboratorio;
+    const labId = Array.isArray(params.labId) ? params.labId[0] : params.labId;
 
     const [selectedDate, setSelectedDate] = useState('');
+    const [laboratory, setLaboratory] = useState<Laboratory | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [currentDate] = useState(() => {
+        const today = new Date();
+        return today.toISOString().split('T')[0]; // YYYY-MM-DD
+    });
 
-    // Mock de dias ocupados (formato YYYY-MM-DD)
-    const diasOcupados = {
-        '2025-08-18': { selected: true, marked: true, selectedColor: '#EF4444' },
-        '2025-08-20': { selected: true, marked: true, selectedColor: '#EF4444' },
+    useEffect(() => {
+        loadLaboratory();
+    }, [labId]);
+
+    const loadLaboratory = async () => {
+        if (!labId) {
+            Alert.alert('Erro', 'ID do laboratório não encontrado.');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const lab = await ApiService.getLaboratoryById(labId);
+            console.log('[ReservarLaboratorio] Laboratório carregado:', lab);
+            setLaboratory(lab);
+        } catch (error) {
+            console.error('[ReservarLaboratorio] Erro ao carregar laboratório:', error);
+            Alert.alert('Erro', 'Não foi possível carregar as informações do laboratório.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Dias com reserva pendente (borda pontilhada)
-    const diasPendentes = {
-        '2025-08-19': { marked: true, dotColor: '#EF4444', marked: true },
+    // Formata data para YYYY-MM-DD
+    const formatDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
 
-    // Combina os dias marcados
-    const markedDates = {
-        ...diasOcupados,
-        ...diasPendentes,
-        ...(selectedDate && !diasOcupados[selectedDate] ? {
-            [selectedDate]: {
+    // Verifica se uma data está ocupada
+    const isDateOccupied = (dateString: string): boolean => {
+        if (!laboratory?.reservations) return false;
+        
+        const checkDate = new Date(dateString + 'T00:00:00');
+        const checkDateStr = formatDate(checkDate);
+
+        return laboratory.reservations.some(reservation => {
+            if (reservation.status === 'CANCELLED' || reservation.status === 'COMPLETED') {
+                return false;
+            }
+            
+            const startDate = new Date(reservation.startDate);
+            const endDate = new Date(reservation.endDate);
+            const startDateStr = formatDate(startDate);
+            const endDateStr = formatDate(endDate);
+
+            // Verifica se a data está entre o início e fim da reserva
+            return checkDateStr >= startDateStr && checkDateStr <= endDateStr;
+        });
+    };
+
+    // Verifica se uma data tem reserva pendente
+    const hasPendingReservation = (dateString: string): boolean => {
+        if (!laboratory?.reservations) return false;
+        
+        const checkDate = new Date(dateString + 'T00:00:00');
+        const checkDateStr = formatDate(checkDate);
+
+        return laboratory.reservations.some(reservation => {
+            if (reservation.status !== 'PENDING') return false;
+            
+            const startDate = new Date(reservation.startDate);
+            const startDateStr = formatDate(startDate);
+
+            return checkDateStr === startDateStr;
+        });
+    };
+
+    // Gera os dias marcados para o calendário
+    const getMarkedDates = () => {
+        const marked: any = {};
+
+        // Marca dias ocupados
+        if (laboratory?.reservations) {
+            laboratory.reservations.forEach(reservation => {
+                if (reservation.status === 'CANCELLED' || reservation.status === 'COMPLETED') {
+                    return;
+                }
+
+                const startDate = new Date(reservation.startDate);
+                const endDate = new Date(reservation.endDate);
+                
+                // Marca todos os dias da reserva
+                let currentDate = new Date(startDate);
+                while (currentDate <= endDate) {
+                    const dateStr = formatDate(currentDate);
+                    if (reservation.status === 'PENDING') {
+                        marked[dateStr] = {
+                            marked: true,
+                            dotColor: '#F59E0B',
+                            selectedColor: '#F59E0B'
+                        };
+                    } else {
+                        marked[dateStr] = {
+                            marked: true,
+                            selected: true,
+                            selectedColor: '#EF4444',
+                            disabled: true
+                        };
+                    }
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+            });
+        }
+
+        // Marca a data selecionada pelo usuário
+        if (selectedDate && !isDateOccupied(selectedDate)) {
+            marked[selectedDate] = {
+                ...marked[selectedDate],
                 selected: true,
                 selectedColor: '#16a34a',
                 selectedTextColor: 'white'
-            }
-        } : {})
+            };
+        }
+
+        return marked;
     };
 
     const handleDayPress = (day: any) => {
         const dateString = day.dateString;
+        const selectedDateObj = new Date(dateString + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Verifica se a data é no passado
+        if (selectedDateObj < today) {
+            Alert.alert('Data Inválida', 'Não é possível selecionar uma data no passado.');
+            return;
+        }
 
         // Verifica se o dia está ocupado
-        if (diasOcupados[dateString]) {
-            Alert.alert('Dia Ocupado', 'Este dia já está reservado por outro professor.');
+        if (isDateOccupied(dateString)) {
+            const reservation = laboratory?.reservations.find(r => {
+                const startDate = new Date(r.startDate);
+                const endDate = new Date(r.endDate);
+                const checkDate = new Date(dateString + 'T00:00:00');
+                return checkDate >= startDate && checkDate <= endDate && 
+                       r.status !== 'CANCELLED' && r.status !== 'COMPLETED';
+            });
+            
+            const professorName = reservation?.professor?.name || 'outro professor';
+            Alert.alert('Dia Ocupado', `Este dia já está reservado por ${professorName}.`);
             return;
         }
 
@@ -66,6 +206,12 @@ export default function ReservarLaboratorio() {
             return;
         }
 
+        const labId = Array.isArray(params.labId) ? params.labId[0] : params.labId;
+        if (!labId) {
+            Alert.alert('Erro', 'ID do laboratório não encontrado.');
+            return;
+        }
+
         const data = new Date(selectedDate + 'T00:00:00');
         const dataFormatada = `${String(data.getDate()).padStart(2, '0')}/${String(data.getMonth() + 1).padStart(2, '0')}/${data.getFullYear()}`;
 
@@ -73,7 +219,9 @@ export default function ReservarLaboratorio() {
             pathname: '/dashboard-professor/confirmar-reserva',
             params: {
                 laboratorio: laboratorio,
-                data: dataFormatada
+                labId: labId,
+                data: dataFormatada,
+                selectedDate: selectedDate
             }
         });
     };
@@ -110,11 +258,18 @@ export default function ReservarLaboratorio() {
             {/* Conteúdo */}
             <ScrollView className='flex-1' contentContainerStyle={{ paddingBottom: 20 }}>
                 <View className='px-4 pt-6'>
-                    {/* Calendário */}
-                    <Calendar
-                        current={'2025-08-01'}
-                        onDayPress={handleDayPress}
-                        markedDates={markedDates}
+                    {loading ? (
+                        <View className='flex-1 justify-center items-center py-20'>
+                            <ActivityIndicator size="large" color="#15803d" />
+                            <Text className='text-gray-600 mt-4'>Carregando informações...</Text>
+                        </View>
+                    ) : (
+                        <>
+                            {/* Calendário */}
+                            <Calendar
+                                current={currentDate}
+                                onDayPress={handleDayPress}
+                                markedDates={getMarkedDates()}
                         theme={{
                             backgroundColor: '#ffffff',
                             calendarBackground: '#ffffff',
@@ -144,9 +299,10 @@ export default function ReservarLaboratorio() {
                             shadowRadius: 4,
                             padding: 10,
                         }}
-                        hideExtraDays={false}
-                        enableSwipeMonths={true}
-                    />
+                                hideExtraDays={false}
+                                enableSwipeMonths={true}
+                                minDate={currentDate}
+                            />
 
                     {/* Legenda */}
                     <View className='mt-6 bg-gray-50 rounded-2xl p-4'>
@@ -157,12 +313,12 @@ export default function ReservarLaboratorio() {
                             <View className='flex-row items-center mb-2'>
                                 <View className='w-8 h-8 bg-red-500 rounded-full' />
                                 <Text className='text-gray-600 ml-3'>
-                                    Dia ocupado
+                                    Dia ocupado (confirmado)
                                 </Text>
                             </View>
                             <View className='flex-row items-center mb-2'>
                                 <View className='w-8 h-8 rounded-full items-center justify-center'>
-                                    <View className='w-2 h-2 bg-red-500 rounded-full' />
+                                    <View className='w-2 h-2 bg-amber-500 rounded-full' />
                                 </View>
                                 <Text className='text-gray-600 ml-3'>
                                     Reserva pendente
@@ -177,16 +333,18 @@ export default function ReservarLaboratorio() {
                         </View>
                     </View>
 
-                    {/* Botão Confirmar */}
-                    <TouchableOpacity
-                        className='bg-green-600 rounded-full py-4 mt-6'
-                        onPress={handleConfirmarReserva}
-                        activeOpacity={0.8}
-                    >
-                        <Text className='text-white text-center font-bold text-base'>
-                            Confirmar Reserva
-                        </Text>
-                    </TouchableOpacity>
+                            {/* Botão Confirmar */}
+                            <TouchableOpacity
+                                className='bg-green-600 rounded-full py-4 mt-6'
+                                onPress={handleConfirmarReserva}
+                                activeOpacity={0.8}
+                            >
+                                <Text className='text-white text-center font-bold text-base'>
+                                    Confirmar Reserva
+                                </Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
             </ScrollView>
         </View>

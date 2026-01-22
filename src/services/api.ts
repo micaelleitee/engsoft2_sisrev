@@ -35,16 +35,31 @@ export class ApiService {
     const url = `${API_BASE_URL}${endpoint}`;
 
     try {
+      console.log(`[ApiService] Making ${options.method || 'GET'} request to: ${url}`);
+      
       const response = await fetch(url, {
         ...options,
         headers,
       });
 
-      const data = await response.json();
+      let data;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = { error: text || 'Erro desconhecido' };
+        }
+      }
 
       if (!response.ok) {
+        console.error(`[ApiService] Error response:`, data);
         throw {
-          error: data.error || 'Erro na requisição',
+          error: data.error || data.message || 'Erro na requisição',
           statusCode: response.status,
         } as ApiError;
       }
@@ -54,8 +69,11 @@ export class ApiService {
       if (error && typeof error === 'object' && 'error' in error) {
         throw error as ApiError;
       }
+      
+      // Erro de rede ou conexão
+      console.error(`[ApiService] Network error:`, error);
       throw {
-        error: 'Erro de conexão. Verifique se o servidor está rodando.',
+        error: error instanceof Error ? error.message : 'Erro de conexão. Verifique se o servidor está rodando e a URL está correta.',
         statusCode: 0,
       } as ApiError;
     }

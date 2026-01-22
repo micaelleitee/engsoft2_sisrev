@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Alert, TextInput, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { ApiService } from '../../src/services/api';
 
 export default function ConfirmarReserva() {
     const router = useRouter();
-    const { laboratorio, data } = useLocalSearchParams();
+    const { laboratorio, labId, data, selectedDate } = useLocalSearchParams();
 
     const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null);
     const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<string>('Engenharia de Software 1');
+    const [disciplinaId, setDisciplinaId] = useState<string | null>(null);
     const [concordaTermos, setConcordaTermos] = useState(false);
     const [dropdownAberto, setDropdownAberto] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [disciplinas, setDisciplinas] = useState<Array<{ id: string; name: string }>>([]);
 
     // Horários disponíveis
     const horariosDisponiveis = [
@@ -20,15 +24,34 @@ export default function ConfirmarReserva() {
         '21:10 - 22:00',
     ];
 
-    // Disciplinas do professor
-    const disciplinas = [
-        'Engenharia de Software 1',
-        'Engenharia de Software 2',
-        'Banco de Dados',
-        'Programação Orientada a Objetos',
-    ];
+    // Carregar disciplinas do backend
+    useEffect(() => {
+        loadDisciplines();
+    }, []);
 
-    const handleReservar = () => {
+    const loadDisciplines = async () => {
+        try {
+            // Por enquanto, vamos usar disciplinas mockadas
+            // TODO: Implementar endpoint de disciplinas no backend
+            // Por enquanto, vamos usar disciplinas mockadas sem IDs
+            // TODO: Implementar endpoint de disciplinas no backend para buscar IDs reais
+            const mockDisciplines = [
+                { id: '', name: 'Engenharia de Software 1' },
+                { id: '', name: 'Engenharia de Software 2' },
+                { id: '', name: 'Banco de Dados' },
+                { id: '', name: 'Programação Orientada a Objetos' },
+            ];
+            setDisciplinas(mockDisciplines);
+            if (mockDisciplines.length > 0) {
+                setDisciplinaSelecionada(mockDisciplines[0].name);
+                // Não definir disciplinaId, será opcional
+            }
+        } catch (error) {
+            console.error('Erro ao carregar disciplinas:', error);
+        }
+    };
+
+    const handleReservar = async () => {
         if (!horarioSelecionado) {
             Alert.alert('Atenção', 'Por favor, selecione um horário.');
             return;
@@ -39,16 +62,75 @@ export default function ConfirmarReserva() {
             return;
         }
 
-        Alert.alert(
-            'Reserva Confirmada!',
-            `Laboratório: ${laboratorio}\nData: ${data}\nHorário: ${horarioSelecionado}\nDisciplina: ${disciplinaSelecionada}`,
-            [
-                {
-                    text: 'OK',
-                    onPress: () => router.push('/dashboard-professor/reservations/reservations'),
-                },
-            ]
-        );
+        if (!labId) {
+            Alert.alert('Erro', 'ID do laboratório não encontrado.');
+            return;
+        }
+
+        // disciplineId é opcional, então não vamos validar
+
+        if (!selectedDate) {
+            Alert.alert('Erro', 'Data não encontrada.');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            // Parse do horário (formato: "18:30 - 19:20")
+            const [startTime, endTime] = horarioSelecionado.split(' - ');
+            const [startHour, startMinute] = startTime.split(':');
+            const [endHour, endMinute] = endTime.split(':');
+
+            // Criar datas ISO
+            const startDate = new Date(`${selectedDate}T${startHour}:${startMinute}:00`);
+            const endDate = new Date(`${selectedDate}T${endHour}:${endMinute}:00`);
+
+            // Converter para ISO string
+            const startDateISO = startDate.toISOString();
+            const endDateISO = endDate.toISOString();
+
+            console.log('[Reserva] Criando reserva:', {
+                laboratoryId: labId,
+                disciplineId: disciplinaId,
+                startDate: startDateISO,
+                endDate: endDateISO
+            });
+
+            const reservationData: any = {
+                laboratoryId: labId as string,
+                startDate: startDateISO,
+                endDate: endDateISO,
+                description: `Reserva para ${disciplinaSelecionada}`
+            };
+
+            // Adicionar disciplineId apenas se estiver disponível
+            if (disciplinaId) {
+                reservationData.disciplineId = disciplinaId;
+            }
+
+            const reservation = await ApiService.createReservation(reservationData);
+
+            console.log('[Reserva] Reserva criada com sucesso:', reservation);
+
+            Alert.alert(
+                'Reserva Confirmada!',
+                `Laboratório: ${laboratorio}\nData: ${data}\nHorário: ${horarioSelecionado}\nDisciplina: ${disciplinaSelecionada}`,
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => router.push('/dashboard-professor/reservations/reservations'),
+                    },
+                ]
+            );
+        } catch (error: any) {
+            console.error('[Reserva] Erro ao criar reserva:', error);
+            Alert.alert(
+                'Erro',
+                error?.error || error?.message || 'Erro ao criar reserva. Tente novamente.'
+            );
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancelar = () => {
@@ -146,21 +228,22 @@ export default function ConfirmarReserva() {
                         <View className='border-2 border-gray-300 border-t-0 rounded-b-xl overflow-hidden bg-white'>
                             {disciplinas.map((disciplina, index) => (
                                 <TouchableOpacity
-                                    key={disciplina}
+                                    key={disciplina.id}
                                     onPress={() => {
-                                        setDisciplinaSelecionada(disciplina);
+                                        setDisciplinaSelecionada(disciplina.name);
+                                        // disciplineId é opcional, então não vamos definir
                                         setDropdownAberto(false);
                                     }}
                                     className={`py-3 px-4 flex-row items-center justify-between ${
-                                        disciplinaSelecionada === disciplina ? 'bg-green-50' : 'bg-white'
+                                        disciplinaSelecionada === disciplina.name ? 'bg-green-50' : 'bg-white'
                                     } ${index < disciplinas.length - 1 ? 'border-b border-gray-200' : ''}`}
                                 >
                                     <Text className={`text-base ${
-                                        disciplinaSelecionada === disciplina ? 'text-green-700 font-semibold' : 'text-gray-700'
+                                        disciplinaSelecionada === disciplina.name ? 'text-green-700 font-semibold' : 'text-gray-700'
                                     }`}>
-                                        {disciplina}
+                                        {disciplina.name}
                                     </Text>
-                                    {disciplinaSelecionada === disciplina && (
+                                    {disciplinaSelecionada === disciplina.name && (
                                         <Ionicons name="checkmark-circle" size={24} color="#15803d" />
                                     )}
                                 </TouchableOpacity>
@@ -189,8 +272,13 @@ export default function ConfirmarReserva() {
                     <TouchableOpacity
                         onPress={handleReservar}
                         className='flex-1 bg-green-700 rounded-full py-3 mr-2'
+                        disabled={loading}
                     >
-                        <Text className='text-white text-center font-semibold text-base'>Reservar</Text>
+                        {loading ? (
+                            <ActivityIndicator color="white" />
+                        ) : (
+                            <Text className='text-white text-center font-semibold text-base'>Reservar</Text>
+                        )}
                     </TouchableOpacity>
 
                     <TouchableOpacity
