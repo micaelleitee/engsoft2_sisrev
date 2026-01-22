@@ -50,3 +50,4 @@ export const getDisciplineById = async (req: Request, res: Response) => {
 };
 
 
+
