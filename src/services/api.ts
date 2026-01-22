@@ -92,6 +92,7 @@ export class ApiService {
     password: string;
     name: string;
     role?: 'ALUNO' | 'PROFESSOR';
+    disciplineId?: string;
   }) {
     return this.request<{ token: string; user: any }>(API_ENDPOINTS.REGISTER, {
       method: 'POST',
@@ -106,6 +107,15 @@ export class ApiService {
 
   static async getLaboratoryById(id: string) {
     return this.request<any>(API_ENDPOINTS.LABORATORY_BY_ID(id));
+  }
+
+  // Disciplines
+  static async getDisciplines() {
+    return this.request<any[]>(API_ENDPOINTS.DISCIPLINES);
+  }
+
+  static async getDisciplineById(id: string) {
+    return this.request<any>(API_ENDPOINTS.DISCIPLINE_BY_ID(id));
   }
 
   // Reservations

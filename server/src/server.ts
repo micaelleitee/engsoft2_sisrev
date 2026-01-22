@@ -8,6 +8,7 @@ import { laboratoryRoutes } from './routes/laboratory.routes';
 import { reservationRoutes } from './routes/reservation.routes';
 import { userRoutes } from './routes/user.routes';
 import { notificationRoutes } from './routes/notification.routes';
+import { disciplineRoutes } from './routes/discipline.routes';
 
 dotenv.config();
 
@@ -63,6 +64,7 @@ app.use('/api/laboratories', laboratoryRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/disciplines', disciplineRoutes);
 
 // Error handling
 app.use(errorHandler);

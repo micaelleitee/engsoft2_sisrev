@@ -76,11 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string,
     name: string,
-    role?: 'ALUNO' | 'PROFESSOR'
+    role?: 'ALUNO' | 'PROFESSOR',
+    disciplineId?: string
   ) => {
     try {
-      console.log('[AuthContext] Attempting to register user:', { email, name, role });
-      const response = await ApiService.register({ email, password, name, role });
+      console.log('[AuthContext] Attempting to register user:', { email, name, role, disciplineId });
+      const response = await ApiService.register({ email, password, name, role, disciplineId });
       console.log('[AuthContext] Registration successful:', response);
       
       await Promise.all([

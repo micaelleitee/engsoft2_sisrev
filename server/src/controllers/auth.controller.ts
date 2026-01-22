@@ -16,7 +16,8 @@ const registerSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
   name: z.string().min(1, 'Nome é obrigatório'),
-  role: z.enum(['ALUNO', 'PROFESSOR']).optional()
+  role: z.enum(['ALUNO', 'PROFESSOR']).optional(),
+  disciplineId: z.string().uuid('ID da disciplina inválido').optional()
 });
 
 export const login = async (req: Request, res: Response) => {
@@ -127,6 +128,31 @@ export const register = async (req: Request, res: Response) => {
     });
     
     console.log('[Register] Usuário criado com sucesso:', { id: user.id, email: user.email, role: user.role });
+
+    // Se for aluno e tiver disciplineId, cria o enrollment
+    if (userRole === 'ALUNO' && data.disciplineId) {
+      try {
+        // Verifica se a disciplina existe
+        const discipline = await prisma.discipline.findUnique({
+          where: { id: data.disciplineId }
+        });
+
+        if (discipline) {
+          await prisma.disciplineEnrollment.create({
+            data: {
+              userId: user.id,
+              disciplineId: data.disciplineId
+            }
+          });
+          console.log('[Register] Enrollment criado para disciplina:', discipline.name);
+        } else {
+          console.log('[Register] Disciplina não encontrada:', data.disciplineId);
+        }
+      } catch (error) {
+        // Não falha o registro se houver erro ao criar enrollment
+        console.error('[Register] Erro ao criar enrollment:', error);
+      }
+    }
 
     const secret = process.env.JWT_SECRET;
     if (!secret) {

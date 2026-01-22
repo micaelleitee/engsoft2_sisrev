@@ -1,36 +1,55 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Image, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../src/contexts/AuthContext';
+import { ApiService } from '../../src/services/api';
 
-// Mock de disciplinas - posteriormente virá do copo de dados
-const DISCIPLINES = [
-    'Engenharia de Software 2',
-    'Engenharia de Software 1',
-    'Banco de Dados',
-    'Estruturas de Dados',
-    'Programação Orientada a Objetos',
-    'Redes de Computadores',
-    'Segurança da Informação',
-    'Desenvolvimento Mobile',
-    'Inteligência Artificial',
-    'Gestão de Projetos'
-];
+interface Discipline {
+    id: string;
+    name: string;
+    code?: string;
+    description?: string;
+}
 
 export default function SignUp() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [discipline, setDiscipline] = useState('Engenharia de Software 2');
+    const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline | null>(null);
+    const [disciplines, setDisciplines] = useState<Discipline[]>([]);
     const [isDisciplineModalVisible, setIsDisciplineModalVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingDisciplines, setLoadingDisciplines] = useState(false);
     const router = useRouter();
     const { register } = useAuth();
     const params = useLocalSearchParams<{ userType: 'aluno' | 'professor' }>();
     
     // Normaliza userType para garantir que seja uma string (não array)
     const userType = Array.isArray(params.userType) ? params.userType[0] : params.userType;
+
+    // Carregar disciplinas do backend quando for aluno
+    useEffect(() => {
+        if (userType === 'aluno') {
+            loadDisciplines();
+        }
+    }, [userType]);
+
+    const loadDisciplines = async () => {
+        try {
+            setLoadingDisciplines(true);
+            const data = await ApiService.getDisciplines();
+            setDisciplines(data);
+            if (data.length > 0) {
+                setSelectedDiscipline(data[0]);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar disciplinas:', error);
+            Alert.alert('Erro', 'Não foi possível carregar as disciplinas. Tente novamente.');
+        } finally {
+            setLoadingDisciplines(false);
+        }
+    };
 
     // Validação de email baseado no tipo de usuário
     const validateEmail = (email: string, type: 'aluno' | 'professor' | undefined): boolean => {
@@ -95,9 +114,28 @@ export default function SignUp() {
             }
         }
 
+        // Validação: se for aluno, deve ter selecionado uma disciplina
+        if (userType === 'aluno' && !selectedDiscipline) {
+            Alert.alert('Erro', 'Por favor, selecione uma disciplina.');
+            return;
+        }
+
         setLoading(true);
         try {
-            const response = await register(emailLower, password, name, role);
+            // Prepara dados do registro
+            const registerData: any = {
+                email: emailLower,
+                password,
+                name,
+                role
+            };
+
+            // Adiciona disciplineId se for aluno e tiver disciplina selecionada
+            if (userType === 'aluno' && selectedDiscipline) {
+                registerData.disciplineId = selectedDiscipline.id;
+            }
+
+            const response = await register(registerData.email, registerData.password, registerData.name, registerData.role, registerData.disciplineId);
             
             // Redireciona para o dashboard correto baseado no role do usuário criado
             if (response?.user?.role === 'ALUNO') {
@@ -219,16 +257,24 @@ export default function SignUp() {
                         <Text className='text-green-700 font-semibold mb-2 text-base'>
                             Escolha sua disciplina:
                         </Text>
-                        <TouchableOpacity 
-                            className='border border-green-700 rounded-full px-4 py-3 flex-row justify-between items-center'
-                            onPress={() => setIsDisciplineModalVisible(true)}
-                            activeOpacity={0.7}
-                        >
-                            <Text className='text-gray-800 text-base flex-1'>
-                                {discipline}
-                            </Text>
-                            <Text className='text-green-700 text-lg'>▼</Text>
-                        </TouchableOpacity>
+                        {loadingDisciplines ? (
+                            <View className='border border-green-700 rounded-full px-4 py-3 flex-row justify-center items-center'>
+                                <ActivityIndicator size="small" color="#1C5E27" />
+                                <Text className='text-gray-600 text-base ml-2'>Carregando disciplinas...</Text>
+                            </View>
+                        ) : (
+                            <TouchableOpacity 
+                                className='border border-green-700 rounded-full px-4 py-3 flex-row justify-between items-center'
+                                onPress={() => setIsDisciplineModalVisible(true)}
+                                activeOpacity={0.7}
+                                disabled={disciplines.length === 0}
+                            >
+                                <Text className='text-gray-800 text-base flex-1'>
+                                    {selectedDiscipline ? selectedDiscipline.name : 'Nenhuma disciplina disponível'}
+                                </Text>
+                                <Text className='text-green-700 text-lg'>▼</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 )}
 
@@ -251,25 +297,33 @@ export default function SignUp() {
                                 </Text>
                             </View>
                             <ScrollView className='max-h-80'>
-                                {DISCIPLINES.map((item, index) => (
-                                    <TouchableOpacity
-                                        key={index}
-                                        className={`border-b border-gray-100 p-4 ${
-                                            item === discipline ? 'bg-green-50' : ''
-                                        }`}
-                                        onPress={() => {
-                                            setDiscipline(item);
-                                            setIsDisciplineModalVisible(false);
-                                        }}
-                                        activeOpacity={0.7}
-                                    >
-                                        <Text className={`text-base ${
-                                            item === discipline ? 'text-green-700 font-semibold' : 'text-gray-800'
-                                        }`}>
-                                            {item}
+                                {disciplines.length === 0 ? (
+                                    <View className='p-4'>
+                                        <Text className='text-gray-600 text-center'>
+                                            Nenhuma disciplina disponível
                                         </Text>
-                                    </TouchableOpacity>
-                                ))}
+                                    </View>
+                                ) : (
+                                    disciplines.map((item) => (
+                                        <TouchableOpacity
+                                            key={item.id}
+                                            className={`border-b border-gray-100 p-4 ${
+                                                selectedDiscipline?.id === item.id ? 'bg-green-50' : ''
+                                            }`}
+                                            onPress={() => {
+                                                setSelectedDiscipline(item);
+                                                setIsDisciplineModalVisible(false);
+                                            }}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text className={`text-base ${
+                                                selectedDiscipline?.id === item.id ? 'text-green-700 font-semibold' : 'text-gray-800'
+                                            }`}>
+                                                {item.name}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))
+                                )}
                             </ScrollView>
                         </View>
                     </TouchableOpacity>

@@ -24,6 +24,10 @@ export const API_ENDPOINTS = {
   LABORATORIES: '/api/laboratories',
   LABORATORY_BY_ID: (id: string) => `/api/laboratories/${id}`,
   
+  // Disciplines
+  DISCIPLINES: '/api/disciplines',
+  DISCIPLINE_BY_ID: (id: string) => `/api/disciplines/${id}`,
+  
   // Reservations
   RESERVATIONS: '/api/reservations',
   RESERVATION_BY_ID: (id: string) => `/api/reservations/${id}`,
