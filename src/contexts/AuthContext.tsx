@@ -90,6 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setToken(response.token);
       setUser(response.user);
+      
+      // Retorna a resposta para permitir redirecionamento baseado no role
+      return response;
     } catch (error: any) {
       console.error('[AuthContext] Registration error:', error);
       const errorMessage = error?.error || error?.message || 'Erro ao registrar. Verifique sua conexão e tente novamente.';

@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Image, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../src/contexts/AuthContext';
@@ -27,6 +27,26 @@ export default function SignUp() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { register } = useAuth();
+    const params = useLocalSearchParams<{ userType: 'aluno' | 'professor' }>();
+    
+    // Normaliza userType para garantir que seja uma string (não array)
+    const userType = Array.isArray(params.userType) ? params.userType[0] : params.userType;
+
+    // Validação de email baseado no tipo de usuário
+    const validateEmail = (email: string, type: 'aluno' | 'professor' | undefined): boolean => {
+        if (!type) return true; // Se não houver tipo, não valida (compatibilidade)
+        
+        const emailLower = email.toLowerCase().trim();
+        
+        if (type === 'aluno') {
+            return emailLower.endsWith('@aluno.ifce.edu.br');
+        } else if (type === 'professor') {
+            // Para professor, deve terminar com @ifce.edu.br mas NÃO com @aluno.ifce.edu.br
+            return emailLower.endsWith('@ifce.edu.br') && !emailLower.endsWith('@aluno.ifce.edu.br');
+        }
+        
+        return true;
+    };
 
     const handleSignUp = async () => {
         if (!password || !confirmPassword || !name || !email) {
@@ -46,22 +66,54 @@ export default function SignUp() {
 
         const emailLower = email.toLowerCase().trim();
         
-        // Determina o role baseado no email (verificar primeiro o mais específico)
-        let role: 'ALUNO' | 'PROFESSOR' | undefined;
-        if (emailLower.endsWith('@aluno.ifce.edu.br')) {
-            role = 'ALUNO';
-        } else if (emailLower.endsWith('@ifce.edu.br') && !emailLower.endsWith('@aluno.ifce.edu.br')) {
-            role = 'PROFESSOR';
-        } else {
-            Alert.alert('Erro', 'Email deve terminar com @aluno.ifce.edu.br ou @ifce.edu.br');
+        // Validação do email baseado no tipo de usuário
+        if (userType && !validateEmail(emailLower, userType)) {
+            const expectedSuffix = userType === 'aluno' 
+                ? '@aluno.ifce.edu.br' 
+                : '@ifce.edu.br';
+            Alert.alert(
+                'Email inválido', 
+                `O email deve terminar com ${expectedSuffix} para ${userType === 'aluno' ? 'alunos' : 'professores'}.`
+            );
             return;
+        }
+        
+        // Determina o role baseado no userType ou no email (se userType não estiver disponível)
+        let role: 'ALUNO' | 'PROFESSOR' | undefined;
+        if (userType) {
+            // Se userType foi fornecido, usa ele
+            role = userType === 'aluno' ? 'ALUNO' : 'PROFESSOR';
+        } else {
+            // Fallback: determina pelo email (verificar primeiro o mais específico)
+            if (emailLower.endsWith('@aluno.ifce.edu.br')) {
+                role = 'ALUNO';
+            } else if (emailLower.endsWith('@ifce.edu.br') && !emailLower.endsWith('@aluno.ifce.edu.br')) {
+                role = 'PROFESSOR';
+            } else {
+                Alert.alert('Erro', 'Email deve terminar com @aluno.ifce.edu.br ou @ifce.edu.br');
+                return;
+            }
         }
 
         setLoading(true);
         try {
-            await register(emailLower, password, name, role);
-            Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-            router.replace('/login/sign-in');
+            const response = await register(emailLower, password, name, role);
+            
+            // Redireciona para o dashboard correto baseado no role do usuário criado
+            if (response?.user?.role === 'ALUNO') {
+                router.replace('/dashboard-aluno');
+            } else if (response?.user?.role === 'PROFESSOR') {
+                router.replace('/dashboard-professor');
+            } else {
+                // Fallback: redireciona baseado no userType ou vai para login
+                if (userType === 'aluno') {
+                    router.replace('/dashboard-aluno');
+                } else if (userType === 'professor') {
+                    router.replace('/dashboard-professor');
+                } else {
+                    router.replace('/login/sign-in');
+                }
+            }
         } catch (error: any) {
             Alert.alert('Erro', error.message || 'Erro ao realizar cadastro. Tente novamente.');
         } finally {
@@ -140,11 +192,11 @@ export default function SignUp() {
                 {/* Campo de Email */}
                 <View className='mb-4'>
                     <Text className='text-green-700 font-semibold mb-2 text-base'>
-                        Email:
+                        {userType === 'aluno' ? 'Email (Aluno)' : userType === 'professor' ? 'Email (Professor)' : 'Email'}
                     </Text>
                     <TextInput
                         className='border border-green-700 rounded-full px-4 py-3 text-gray-800 text-base'
-                        placeholder='Digite seu email'
+                        placeholder={userType === 'aluno' ? 'exemplo@aluno.ifce.edu.br' : userType === 'professor' ? 'exemplo@ifce.edu.br' : 'Digite seu email'}
                         placeholderTextColor='#1C5E27'
                         value={email}
                         onChangeText={setEmail}
@@ -152,24 +204,33 @@ export default function SignUp() {
                         autoCapitalize='none'
                         autoCorrect={false}
                     />
+                    {userType && (
+                        <Text className='text-xs text-gray-500 mt-1 ml-1'>
+                            {userType === 'aluno' 
+                                ? 'Use seu email institucional (@aluno.ifce.edu.br)'
+                                : 'Use seu email institucional (@ifce.edu.br)'}
+                        </Text>
+                    )}
                 </View>
                 
-                {/* Campo de Disciplina */}
-                <View className='mb-6'>
-                    <Text className='text-green-700 font-semibold mb-2 text-base'>
-                        Escolha sua disciplina:
-                    </Text>
-                    <TouchableOpacity 
-                        className='border border-green-700 rounded-full px-4 py-3 flex-row justify-between items-center'
-                        onPress={() => setIsDisciplineModalVisible(true)}
-                        activeOpacity={0.7}
-                    >
-                        <Text className='text-gray-800 text-base flex-1'>
-                            {discipline}
+                {/* Campo de Disciplina - Apenas para alunos */}
+                {userType === 'aluno' && (
+                    <View className='mb-6'>
+                        <Text className='text-green-700 font-semibold mb-2 text-base'>
+                            Escolha sua disciplina:
                         </Text>
-                        <Text className='text-green-700 text-lg'>▼</Text>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity 
+                            className='border border-green-700 rounded-full px-4 py-3 flex-row justify-between items-center'
+                            onPress={() => setIsDisciplineModalVisible(true)}
+                            activeOpacity={0.7}
+                        >
+                            <Text className='text-gray-800 text-base flex-1'>
+                                {discipline}
+                            </Text>
+                            <Text className='text-green-700 text-lg'>▼</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {/* Modal de Seleção de Disciplina */}
                 <Modal
@@ -231,7 +292,16 @@ export default function SignUp() {
                 </TouchableOpacity>
                 
                 {/* Link Voltar ao Login */}
-                <TouchableOpacity className='py-2' onPress={() => router.replace('/login/sign-in')}>
+                <TouchableOpacity className='py-2' onPress={() => {
+                    if (userType) {
+                        router.replace({
+                            pathname: '/login/sign-in',
+                            params: { userType }
+                        });
+                    } else {
+                        router.replace('/login/sign-in');
+                    }
+                }}>
                     <Text className='text-green-700 text-center font-semibold text-base'>
                         Já tem uma conta? Entrar
                     </Text>

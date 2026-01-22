@@ -10,7 +10,7 @@ export const getAllLaboratories = async (req: Request, res: Response) => {
       reservations: {
         where: {
           status: {
-            in: ['PENDING', 'CONFIRMED']
+            in: ['CONFIRMED']
           }
         },
         include: {
@@ -45,7 +45,7 @@ export const getLaboratoryById = async (req: Request, res: Response) => {
       reservations: {
         where: {
           status: {
-            in: ['PENDING', 'CONFIRMED']
+            in: ['CONFIRMED']
           }
         },
         include: {

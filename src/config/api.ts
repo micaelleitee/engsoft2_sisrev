@@ -4,9 +4,15 @@
 
 // Para encontrar seu IP no Linux:
 // ip addr show | grep "inet " | grep -v 127.0.0.1
+// No Windows: ipconfig
+
+// IMPORTANTE: Para dispositivo físico Android/iOS, use o IP da sua máquina
+// Para emulador Android, use: 'http://10.0.2.2:3000'
+// Para iOS Simulator, use: 'http://localhost:3000'
+// Para dispositivo físico, use: 'http://SEU_IP_AQUI:3000'
 
 export const API_BASE_URL = __DEV__
-  ? 'http://localhost:3000' // Para emulador Android/iOS
+  ? 'http://192.168.18.130:3000' // IP da sua máquina (ajuste conforme necessário)
   : 'https://sua-api-em-producao.com'; // Para produção
 
 export const API_ENDPOINTS = {

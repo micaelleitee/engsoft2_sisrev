@@ -8,7 +8,7 @@ export default function SignIn() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    const { login: authLogin } = useAuth();
+    const { login: authLogin, user } = useAuth();
     const params = useLocalSearchParams<{ userType: 'aluno' | 'professor' }>();
     
     // Normaliza userType para garantir que seja uma string (não array)
@@ -22,7 +22,8 @@ export default function SignIn() {
         if (type === 'aluno') {
             return emailLower.endsWith('@aluno.ifce.edu.br');
         } else if (type === 'professor') {
-            return emailLower.endsWith('@ifce.edu.br');
+            // Para professor, deve terminar com @ifce.edu.br mas NÃO com @aluno.ifce.edu.br
+            return emailLower.endsWith('@ifce.edu.br') && !emailLower.endsWith('@aluno.ifce.edu.br');
         }
         
         return true;
@@ -54,15 +55,23 @@ export default function SignIn() {
         try {
             await authLogin(loginNormalized, passwordNormalized);
             
-            // Redireciona baseado no tipo de usuário e role retornado pela API
-            // A API já valida o email e retorna o role correto
-            if (userType === 'aluno') {
+            // Aguarda um momento para garantir que o contexto foi atualizado
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Redireciona baseado no role do usuário do contexto (prioridade)
+            // Se não houver role no contexto, usa o userType como fallback
+            const userRole = user?.role;
+            
+            if (userRole === 'ALUNO') {
+                router.replace('/dashboard-aluno');
+            } else if (userRole === 'PROFESSOR') {
+                router.replace('/dashboard-professor');
+            } else if (userType === 'aluno') {
                 router.replace('/dashboard-aluno');
             } else if (userType === 'professor') {
                 router.replace('/dashboard-professor');
             } else {
-                // Se não houver userType, tenta redirecionar baseado no role retornado
-                // Isso será tratado melhor quando tivermos acesso ao user do contexto
+                // Fallback: redireciona para aluno
                 router.replace('/dashboard-aluno');
             }
         } catch (error: any) {
@@ -146,7 +155,16 @@ export default function SignIn() {
                 </TouchableOpacity>
                 
                 {/* Link Registrar-se */}
-                <TouchableOpacity className='py-2' onPress={() => router.push('/login/sign-up')}>
+                <TouchableOpacity className='py-2' onPress={() => {
+                    if (userType) {
+                        router.push({
+                            pathname: '/login/sign-up',
+                            params: { userType }
+                        });
+                    } else {
+                        router.push('/login/sign-up');
+                    }
+                }}>
                     <Text className='text-green-700 text-center font-semibold text-base'>
                         Registrar-se
                     </Text>

@@ -63,7 +63,7 @@ export const createReservation = async (req: AuthRequest, res: Response) => {
     where: {
       laboratoryId: data.laboratoryId,
       status: {
-        in: ['PENDING', 'CONFIRMED']
+        in: ['CONFIRMED']
       },
       OR: [
         {
@@ -103,7 +103,7 @@ export const createReservation = async (req: AuthRequest, res: Response) => {
       startDate,
       endDate,
       description: data.description,
-      status: 'PENDING'
+      status: 'CONFIRMED'
     },
     include: {
       laboratory: true,

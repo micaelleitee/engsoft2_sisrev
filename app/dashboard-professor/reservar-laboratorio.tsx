@@ -22,7 +22,7 @@ interface Reservation {
     id: string;
     startDate: string;
     endDate: string;
-    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+    status: 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
     professor: {
         id: string;
         name: string;
@@ -103,23 +103,6 @@ export default function ReservarLaboratorio() {
         });
     };
 
-    // Verifica se uma data tem reserva pendente
-    const hasPendingReservation = (dateString: string): boolean => {
-        if (!laboratory?.reservations) return false;
-        
-        const checkDate = new Date(dateString + 'T00:00:00');
-        const checkDateStr = formatDate(checkDate);
-
-        return laboratory.reservations.some(reservation => {
-            if (reservation.status !== 'PENDING') return false;
-            
-            const startDate = new Date(reservation.startDate);
-            const startDateStr = formatDate(startDate);
-
-            return checkDateStr === startDateStr;
-        });
-    };
-
     // Gera os dias marcados para o calendário
     const getMarkedDates = () => {
         const marked: any = {};
@@ -138,20 +121,12 @@ export default function ReservarLaboratorio() {
                 let currentDate = new Date(startDate);
                 while (currentDate <= endDate) {
                     const dateStr = formatDate(currentDate);
-                    if (reservation.status === 'PENDING') {
-                        marked[dateStr] = {
-                            marked: true,
-                            dotColor: '#F59E0B',
-                            selectedColor: '#F59E0B'
-                        };
-                    } else {
-                        marked[dateStr] = {
-                            marked: true,
-                            selected: true,
-                            selectedColor: '#EF4444',
-                            disabled: true
-                        };
-                    }
+                    marked[dateStr] = {
+                        marked: true,
+                        selected: true,
+                        selectedColor: '#EF4444',
+                        disabled: true
+                    };
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
             });
@@ -314,14 +289,6 @@ export default function ReservarLaboratorio() {
                                 <View className='w-8 h-8 bg-red-500 rounded-full' />
                                 <Text className='text-gray-600 ml-3'>
                                     Dia ocupado (confirmado)
-                                </Text>
-                            </View>
-                            <View className='flex-row items-center mb-2'>
-                                <View className='w-8 h-8 rounded-full items-center justify-center'>
-                                    <View className='w-2 h-2 bg-amber-500 rounded-full' />
-                                </View>
-                                <Text className='text-gray-600 ml-3'>
-                                    Reserva pendente
                                 </Text>
                             </View>
                             <View className='flex-row items-center'>

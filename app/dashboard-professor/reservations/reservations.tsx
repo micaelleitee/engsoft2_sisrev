@@ -15,7 +15,7 @@ interface Reservation {
     };
     startDate: string;
     endDate: string;
-    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+    status: 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
     description?: string;
 }
 
@@ -61,15 +61,6 @@ export default function Reservations() {
                 type: 'CANCELLED',
                 label: 'Cancelada',
                 color: 'bg-red-500'
-            };
-        }
-
-        // Se está pendente, retorna pendente
-        if (reservation.status === 'PENDING') {
-            return {
-                type: 'PENDING',
-                label: 'Pendente',
-                color: 'bg-yellow-500'
             };
         }
 
