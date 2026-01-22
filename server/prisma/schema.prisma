@@ -33,7 +33,6 @@ model User {
 
   // Relações
   reservations  Reservation[]
-  disciplines   DisciplineEnrollment[]
   notifications Notification[]
 
   @@map("users")
@@ -63,24 +62,9 @@ model Discipline {
   updatedAt   DateTime                @updatedAt
 
   // Relações
-  enrollments DisciplineEnrollment[]
   reservations Reservation[]
 
   @@map("disciplines")
-}
-
-model DisciplineEnrollment {
-  id           String     @id @default(uuid())
-  userId       String
-  disciplineId String
-  createdAt    DateTime   @default(now())
-
-  // Relações
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  discipline   Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, disciplineId])
-  @@map("discipline_enrollments")
 }
 
 model Reservation {
