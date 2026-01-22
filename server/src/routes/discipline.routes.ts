@@ -8,3 +8,4 @@ router.get('/:id', getDisciplineById);
 
 export { router as disciplineRoutes };
 
+

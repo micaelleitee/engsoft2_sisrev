@@ -28,7 +28,7 @@ export const getNotifications = async (req: AuthRequest, res: Response) => {
     orderBy: { createdAt: 'desc' }
   });
 
-  res.json(notifications);
+  return res.json(notifications);
 };
 
 export const markAsRead = async (req: AuthRequest, res: Response) => {
@@ -48,6 +48,6 @@ export const markAsRead = async (req: AuthRequest, res: Response) => {
     data: { isRead: true }
   });
 
-  res.json(updated);
+  return res.json(updated);
 };
 

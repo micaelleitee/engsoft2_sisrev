@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getAllDisciplines = async (req: Request, res: Response) => {
+export const getAllDisciplines = async (_req: Request, res: Response) => {
   try {
     const disciplines = await prisma.discipline.findMany({
       orderBy: { name: 'asc' },
@@ -22,7 +22,7 @@ export const getAllDisciplines = async (req: Request, res: Response) => {
       }
     });
 
-    res.json(disciplines);
+    return res.json(disciplines);
   } catch (error) {
     console.error('[Discipline] Erro ao buscar disciplinas:', error);
     res.status(500).json({ error: 'Erro ao buscar disciplinas' });
@@ -35,29 +35,18 @@ export const getDisciplineById = async (req: Request, res: Response) => {
 
     const discipline = await prisma.discipline.findUnique({
       where: { id },
-      include: {
-        enrollments: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
-            }
-          }
-        }
-      }
+      // enrollments include removed as DisciplineEnrollment model no longer exists
     });
 
     if (!discipline) {
       return res.status(404).json({ error: 'Disciplina não encontrada' });
     }
 
-    res.json(discipline);
+    return res.json(discipline);
   } catch (error) {
     console.error('[Discipline] Erro ao buscar disciplina:', error);
     res.status(500).json({ error: 'Erro ao buscar disciplina' });
   }
 };
+
 
