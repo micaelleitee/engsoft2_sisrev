@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ALUNO
+  PROFESSOR
+  ADMIN
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          UserRole  @default(ALUNO)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  reservations  Reservation[]
+  disciplines   DisciplineEnrollment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Laboratory {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  description String?
+  capacity    Int?
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relações
+  reservations Reservation[]
+
+  @@map("laboratories")
+}
+
+model Discipline {
+  id          String                  @id @default(uuid())
+  name        String                  @unique
+  code        String?                 @unique
+  description String?
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  // Relações
+  enrollments DisciplineEnrollment[]
+  reservations Reservation[]
+
+  @@map("disciplines")
+}
+
+model DisciplineEnrollment {
+  id           String     @id @default(uuid())
+  userId       String
+  disciplineId String
+  createdAt    DateTime   @default(now())
+
+  // Relações
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discipline   Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, disciplineId])
+  @@map("discipline_enrollments")
+}
+
+model Reservation {
+  id            String            @id @default(uuid())
+  laboratoryId String
+  professorId   String
+  disciplineId  String?
+  startDate     DateTime
+  endDate       DateTime
+  status        ReservationStatus @default(PENDING)
+  description   String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relações
+  laboratory    Laboratory         @relation(fields: [laboratoryId], references: [id], onDelete: Cascade)
+  professor     User               @relation(fields: [professorId], references: [id], onDelete: Cascade)
+  discipline    Discipline?        @relation(fields: [disciplineId], references: [id], onDelete: SetNull)
+  notifications Notification[]
+
+  @@index([laboratoryId, startDate, endDate])
+  @@index([professorId])
+  @@map("reservations")
+}
+
+model Notification {
+  id           String     @id @default(uuid())
+  userId       String
+  reservationId String?
+  title        String
+  message      String
+  isRead       Boolean    @default(false)
+  type         String?    // 'RESERVATION_CONFIRMED', 'RESERVATION_CANCELLED', 'RESERVATION_UPDATED', etc.
+  createdAt    DateTime   @default(now())
+
+  // Relações
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservation  Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
