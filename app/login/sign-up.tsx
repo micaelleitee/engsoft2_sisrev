@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Image, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { useAuth } from '../../src/contexts/AuthContext';
 
 // Mock de disciplinas - posteriormente virá do copo de dados
 const DISCIPLINES = [
@@ -17,17 +18,18 @@ const DISCIPLINES = [
 ];
 
 export default function SignUp() {
-    const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [discipline, setDiscipline] = useState('Engenharia de Software 2');
     const [isDisciplineModalVisible, setIsDisciplineModalVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const { register } = useAuth();
 
-    const handleSignUp = () => {
-        if (!login || !password || !confirmPassword || !name || !email) {
+    const handleSignUp = async () => {
+        if (!password || !confirmPassword || !name || !email) {
             Alert.alert('Erro', 'Por favor, preencha todos os campos.');
             return;
         }
@@ -37,14 +39,34 @@ export default function SignUp() {
             return;
         }
 
-        if (!email.includes('@')) {
-            Alert.alert('Erro', 'Email inválido.');
+        if (password.length < 6) {
+            Alert.alert('Erro', 'A senha deve ter no mínimo 6 caracteres.');
             return;
         }
 
-        // Aqui você pode adicionar a lógica para cadastrar o usuário
-        Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-        router.replace('/login/sign-in');
+        const emailLower = email.toLowerCase().trim();
+        
+        // Determina o role baseado no email
+        let role: 'ALUNO' | 'PROFESSOR' | undefined;
+        if (emailLower.endsWith('@aluno.ifce.edu.br')) {
+            role = 'ALUNO';
+        } else if (emailLower.endsWith('@ifce.edu.br')) {
+            role = 'PROFESSOR';
+        } else {
+            Alert.alert('Erro', 'Email deve terminar com @aluno.ifce.edu.br ou @ifce.edu.br');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await register(emailLower, password, name, role);
+            Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+            router.replace('/login/sign-in');
+        } catch (error: any) {
+            Alert.alert('Erro', error.message || 'Erro ao realizar cadastro. Tente novamente.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -66,22 +88,6 @@ export default function SignUp() {
             
             {/* Container do formulário */}
             <View className='w-full max-w-xs'>
-                {/* Campo de Login */}
-                <View className='mb-4'>
-                    <Text className='text-green-700 font-semibold mb-2 text-base'>
-                        Digite um login:
-                    </Text>
-                    <TextInput
-                        className='border border-green-700 rounded-full px-4 py-3 text-gray-800 text-base'
-                        placeholder='Digite um login'
-                        placeholderTextColor='#1C5E27'
-                        value={login}
-                        onChangeText={setLogin}
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                    />
-                </View>
-                
                 {/* Campo de Senha */}
                 <View className='mb-4'>
                     <Text className='text-green-700 font-semibold mb-2 text-base'>
@@ -213,10 +219,15 @@ export default function SignUp() {
                     className='bg-green-700 rounded-full py-4 mb-6'
                     onPress={handleSignUp}
                     activeOpacity={0.8}
+                    disabled={loading}
                 >
-                    <Text className='text-white text-center font-bold text-lg'>
-                        Cadastrar
-                    </Text>
+                    {loading ? (
+                        <ActivityIndicator color="white" />
+                    ) : (
+                        <Text className='text-white text-center font-bold text-lg'>
+                            Cadastrar
+                        </Text>
+                    )}
                 </TouchableOpacity>
                 
                 {/* Link Voltar ao Login */}

@@ -1,11 +1,14 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { useAuth } from '../../src/contexts/AuthContext';
 
 export default function SignIn() {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const { login: authLogin } = useAuth();
     const params = useLocalSearchParams<{ userType: 'aluno' | 'professor' }>();
     
     // Normaliza userType para garantir que seja uma string (não array)
@@ -25,13 +28,17 @@ export default function SignIn() {
         return true;
     };
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         const loginNormalized = login.toLowerCase().trim();
         const passwordNormalized = password.trim();
         
-        console.log('Login attempt:', { login: loginNormalized, password: passwordNormalized, userType });
+        // Validação básica
+        if (!loginNormalized || !passwordNormalized) {
+            Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+            return;
+        }
         
-        // Validação do email baseado no tipo de usuário (deve vir primeiro)
+        // Validação do email baseado no tipo de usuário
         if (userType && !validateEmail(loginNormalized, userType)) {
             const expectedSuffix = userType === 'aluno' 
                 ? '@aluno.ifce.edu.br' 
@@ -43,20 +50,25 @@ export default function SignIn() {
             return;
         }
 
-        // Validação de login e senha
-        if (loginNormalized === 'micael@ifce.edu.br' && passwordNormalized === 'micael') {
-            // Redireciona baseado no tipo de usuário
-            console.log('Login válido, redirecionando para:', userType);
+        setLoading(true);
+        try {
+            await authLogin(loginNormalized, passwordNormalized);
+            
+            // Redireciona baseado no tipo de usuário e role retornado pela API
+            // A API já valida o email e retorna o role correto
             if (userType === 'aluno') {
                 router.replace('/dashboard-aluno');
             } else if (userType === 'professor') {
                 router.replace('/dashboard-professor');
             } else {
-                // Se não houver userType definido, mostra erro
-                Alert.alert('Erro', 'Tipo de usuário não identificado. Por favor, selecione o tipo de usuário novamente.');
+                // Se não houver userType, tenta redirecionar baseado no role retornado
+                // Isso será tratado melhor quando tivermos acesso ao user do contexto
+                router.replace('/dashboard-aluno');
             }
-        } else {
-            Alert.alert('Erro', 'Login ou senha inválidos.');
+        } catch (error: any) {
+            Alert.alert('Erro', error.message || 'Erro ao fazer login. Verifique suas credenciais.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -122,10 +134,15 @@ export default function SignIn() {
                     className='bg-green-700 rounded-full  py-4 mb-6'
                     onPress={handleLogin}
                     activeOpacity={0.8}
+                    disabled={loading}
                 >
-                    <Text className='text-white text-center font-bold text-lg'>
-                        Entrar
-                    </Text>
+                    {loading ? (
+                        <ActivityIndicator color="white" />
+                    ) : (
+                        <Text className='text-white text-center font-bold text-lg'>
+                            Entrar
+                        </Text>
+                    )}
                 </TouchableOpacity>
                 
                 {/* Link Registrar-se */}
