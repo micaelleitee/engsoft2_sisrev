@@ -7,3 +7,4 @@ export const userRoutes = Router();
 userRoutes.get('/profile', authenticate, getProfile);
 userRoutes.put('/profile', authenticate, updateProfile);
 
+

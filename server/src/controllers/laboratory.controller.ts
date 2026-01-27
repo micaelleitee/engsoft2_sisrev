@@ -75,3 +75,4 @@ export const getLaboratoryById = async (req: Request, res: Response) => {
   return res.json(laboratory);
 };
 
+

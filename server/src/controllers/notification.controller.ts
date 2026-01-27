@@ -51,3 +51,4 @@ export const markAsRead = async (req: AuthRequest, res: Response) => {
   return res.json(updated);
 };
 
+

@@ -7,3 +7,4 @@ export const notificationRoutes = Router();
 notificationRoutes.get('/', authenticate, getNotifications);
 notificationRoutes.put('/:id/read', authenticate, markAsRead);
 
+

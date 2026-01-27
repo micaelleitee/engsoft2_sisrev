@@ -16,3 +16,4 @@ reservationRoutes.post('/', authenticate, authorize('PROFESSOR'), createReservat
 reservationRoutes.put('/:id', authenticate, authorize('PROFESSOR'), updateReservation);
 reservationRoutes.delete('/:id', authenticate, authorize('PROFESSOR'), cancelReservation);
 
+

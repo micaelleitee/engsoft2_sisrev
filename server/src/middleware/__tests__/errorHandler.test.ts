@@ -36,3 +36,4 @@ describe('Error Handler Middleware', () => {
     expect(res.status).toHaveBeenCalledWith(500);
   });
 });
+

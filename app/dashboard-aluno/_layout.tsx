@@ -21,7 +21,7 @@ function DashboardAlunoLayout() {
 
     return (
         <View style={{ flex: 1, backgroundColor: '#E5E7EB' }}>
-            {/* Card fixo que envolve todo o conteúdo */}
+            {}
             <View style={{ flex: 1, backgroundColor: 'white', overflow: 'hidden' }}>
                 <Stack
                     screenOptions={{
@@ -38,11 +38,12 @@ function DashboardAlunoLayout() {
                     <Stack.Screen name="profile/suporte" />
                 </Stack>
             </View>
-            {/* Navigation bar fixo na tela, fora do card */}
+            {}
             <BottomNavigationBar tabs={tabs} baseRoute="/dashboard-aluno" />
         </View>
     );
 }
 
 export default memo(DashboardAlunoLayout);
+
 

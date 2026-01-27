@@ -35,19 +35,5 @@ export const getDisciplineById = async (req: Request, res: Response) => {
 
     const discipline = await prisma.discipline.findUnique({
       where: { id },
-      // enrollments include removed as DisciplineEnrollment model no longer exists
-    });
-
-    if (!discipline) {
-      return res.status(404).json({ error: 'Disciplina não encontrada' });
-    }
-
-    return res.json(discipline);
-  } catch (error) {
-    console.error('[Discipline] Erro ao buscar disciplina:', error);
-    return res.status(500).json({ error: 'Erro ao buscar disciplina' });
-  }
-};
-
-
+      
 

@@ -7,3 +7,4 @@ export const laboratoryRoutes = Router();
 laboratoryRoutes.get('/', authenticate, getAllLaboratories);
 laboratoryRoutes.get('/:id', authenticate, getLaboratoryById);
 
+
