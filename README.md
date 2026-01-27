@@ -1,79 +1,45 @@
-# Sistema de Agendamento Online do IFCE - SISREV
+# SISREV: Sistema de Agendamento Online do IFCE
 
-## 📋 Sobre o Projeto
+## 📝 Visão Geral
 
-Este é um projeto acadêmico desenvolvido para o Instituto Federal de Educação, Ciência e Tecnologia do Ceará (IFCE) - Campus Crato, com o objetivo de modernizar e otimizar a gestão dos laboratórios de informática.
+O SISREV é um projeto acadêmico do IFCE - Campus Crato, focado em modernizar a gestão de laboratórios de informática. Atualmente, a comunicação manual gera ineficiências na disponibilidade de laboratórios para aulas. Este sistema visa solucionar esses problemas, proporcionando acesso rápido e centralizado às informações de uso.
 
-## 🎯 Problema Identificado
+## 🎯 Objetivo e Benefícios
 
-No IFCE campus Crato, a gestão dos laboratórios de informática enfrenta dificuldades significativas. Professores e alunos não possuem acesso rápido e centralizado às informações de uso, o que resulta em incertezas na disponibilidade do laboratório para realização das aulas.
+Desenvolver uma solução digital para visualização em tempo real e agendamento antecipado de laboratórios por professores. Isso resultará em:
 
-Atualmente, a comunicação ocorre de forma manual: avisos informais e/ou comunicação presencial. Esse método leva a ineficiências e frustrações, além de aumentar o risco de conflitos de horários e uso indevido dos espaços.
+*   Redução de conflitos de horários.
+*   Agilidade na gestão e transparência no uso dos laboratórios.
+*   Melhora na comunicação entre usuários e otimização dos espaços.
 
-## 🚀 Objetivo
+## ✨ Funcionalidades
 
-Desenvolver uma solução digital que permita:
-- Visualizar a disponibilidade dos laboratórios em tempo real
-- Realizar agendamentos antecipados por professores
-- Reduzir conflitos de horários e uso indevido dos espaços
-- Garantir transparência e acessibilidade a professores, técnicos e alunos
-
-## ⚡ Funcionalidades
-
-O Sistema de Agendamento Online do IFCE terá as seguintes funcionalidades:
-
-### 🖥️ Painel de Disponibilidade
-- Exibição em tempo real da disponibilidade dos laboratórios
-- Visualização das datas de ocupação com limite de até 1 semana
-- Exibição das futuras reservas dos laboratórios (até 1 semana)
-
-### 📅 Agendamento Automatizado
-- Sistema de reservas antecipadas para professores
-- Prevenção de conflitos de horários
-- Interface intuitiva para agendamentos
-
-### 🔔 Notificações/Alertas
-- Alertas sobre mudanças em laboratórios marcados
-- Notificações de confirmação de agendamentos
-- Avisos de cancelamentos ou alterações
-
-### 📊 Relatórios/Históricos
-- Histórico de agendamentos acessível para fins de gestão
-- Relatórios de uso dos laboratórios
-- Dados para análise e tomada de decisões
-
-## 🎯 Benefícios Esperados
-
-A implementação desse sistema visa resolver (ou melhorar) aspectos como:
-- ✅ Redução de conflitos de horários
-- ✅ Agilidade e praticidade na gestão
-- ✅ Transparência no uso dos laboratórios
-- ✅ Melhoria na comunicação entre usuários
-- ✅ Otimização do uso dos espaços
+*   **Painel de Disponibilidade:** Exibição em tempo real da disponibilidade e futuras reservas (até 1 semana).
+*   **Agendamento Automatizado:** Reservas antecipadas para professores, prevenindo conflitos.
+*   **Notificações/Alertas:** Avisos sobre mudanças, confirmações e cancelamentos de agendamentos.
+*   **Relatórios/Históricos:** Histórico de agendamentos e relatórios de uso para gestão.
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **React Native** com **Expo** para desenvolvimento mobile
-- **TypeScript** para tipagem estática
-- **Expo Router** para navegação baseada em arquivos
+*   **React Native** com **Expo**: Desenvolvimento mobile.
+*   **TypeScript**: Tipagem estática.
+*   **Expo Router**: Navegação baseada em arquivos.
 
 ## 🚀 Como Executar o Projeto
 
-1. **Instalar dependências**
-   ```bash
-   npm install
-   ```
-
-2. **Iniciar o aplicativo**
-   ```bash
-   npx expo start
-   ```
-
-3. **Opções de execução:**
-   - [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
-   - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-   - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-   - [Expo Go](https://expo.dev/go) - sandbox limitado para testes
+1.  **Instalar dependências:**
+    ```bash
+    npm install
+    ```
+2.  **Iniciar o aplicativo:**
+    ```bash
+    npx expo start
+    ```
+3.  **Opções de execução:**
+    *   [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
+    *   [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+    *   [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+    *   [Expo Go](https://expo.dev/go) (sandbox limitado para testes)
 
 ## 📁 Estrutura do Projeto
 
@@ -81,7 +47,7 @@ O projeto utiliza [roteamento baseado em arquivos](https://docs.expo.dev/router/
 
 ## 👥 Equipe de Desenvolvimento
 
-Projeto acadêmico desenvolvido por estudantes do curso de Engenharia de Software do IFCE - Campus Crato.
+Projeto acadêmico desenvolvido por estudantes do curso de Sistemas de Informação do IFCE - Campus Crato.
 
 ## 📄 Licença
 
